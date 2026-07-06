@@ -1,0 +1,23 @@
+{
+  "skill_name": "harness-builder",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我有一個 Python FastAPI + React 的 monorepo，最近開始用 coding agent 開發，發現它經常說「完成了」但其實測試沒跑，或者只跑了自己新寫的那個測試。幫我設計一套機制杜絕這個問題。",
+      "expected_output": "應識別為環1（單次改動閉環）問題：提出 edit→verify ledger + Stop block-once + commit 硬 gate 的組合，指出「窄跑不算收環」規則，落點映射到該工程的工具鏈（pytest 全量/npm test、git hooks 或 agent hook），並包含逃生+記帳設計，而不是只建議「在 CLAUDE.md 裡寫規則要求跑測試」。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "看一下我們 repo 的 agent 規範（CLAUDE.md 有寫要 TDD、要跑測試、禁止部署未 commit 代碼），評估一下這套 harness 做得怎麼樣，還缺什麼。",
+      "expected_output": "應按四層結構評估：指出只有約束層（散文規則）沒有強制層（無 deny/fail 落點）、無回流層、無進化層；給出每條規則的機關化落點建議與優先順序；檢查非 agent 路徑與閘後段的覆蓋。",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "我們的 pre-commit hook 會擋「命令裡出現 rm -rf」的提交，但今天寫一個測試（斷言字串裡有 rm -rf）被誤攔了。幫我修一下這個檢測。",
+      "expected_output": "應先區分該 gate 是 advisory 還是 fail-closed（安全 gate）；引用「提及 ≠ 執行」與「regex 模擬 shell 解析超出安全可達範圍」的教訓，警告寧可誤攔不可漏攔；若做精準化必須配正反成對測試（誤射消失 + 真陽性保留），並考慮把誤攔正解放在使用側（引導改用檔案工具）。不應直接給一個「跳過引號內文字」的 naive regex 了事。",
+      "files": []
+    }
+  ]
+}
