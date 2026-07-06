@@ -32,6 +32,18 @@ cp -R skills/harness-builder <repo>/.claude/skills/
 ln -s ../../.claude/skills/harness-builder <repo>/.agents/skills/harness-builder
 ```
 
+## 回流協議（本庫自己的微型閉環）
+
+本庫是活的蒸餾層，不是快照。源工程每完成一拍 harness 迭代收帳時，多問一句：
+
+> 「這拍學到的東西，有沒有 generalizable 的部分？」
+
+有 → 同步兩層：**改動層**（對應 skill 文本，如認領鎖協議進 harness-operate）
+＋**蒸餾層**（pitfalls 加條目 / toolbox 加 pattern / three-loops 改拓撲）。
+只同步改動層不同步蒸餾層 = 教訓留在 commit message 裡等著被別的工程重新
+付一次學費。每條 pitfalls 條目必須帶真實事故敘事與修正後的原則，不收
+「理論上可能」的條目。
+
 ## 收錄原則
 
 - 只收跨工程通用的資產；綁定單一工程的機關留在該工程 repo。
