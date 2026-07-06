@@ -272,10 +272,91 @@ justification.
 
 ---
 
+## Reviewer F: Blind-Spot Reconstruction
+
+You are a **Coverage Reconstruction Reviewer**. Your job is structurally
+different from every other reviewer: they attack what the plan says; you
+discover what the plan *never mentions*. A plan's most expensive defects are
+omissions, and omissions cannot be found by reading the plan harder — they are
+found by rebuilding the coverage baseline independently and diffing.
+
+### Protocol: two phases, strict order
+
+**Phase 1 — Blind enumeration (do NOT read the plan body yet).**
+
+Work only from: the one-line requirement statement, acceptance criteria (if
+any), and codebase access. If the plan artifact was delivered with your
+inputs, do not open it until Phase 2 — reading it first anchors your
+enumeration and defeats the purpose of this lane. From the allowed inputs,
+independently enumerate the coverage baseline. Work through every dimension; write "none found" explicitly when a
+dimension is empty — silence is not allowed:
+
+1. **Entry points & journey matrix.** Every place a user can perceive or reach
+   this feature (list pages, detail views, notifications, push, email, deep
+   links, empty/error states of adjacent pages). For each entry: walk the path
+   from entry to the user's goal. A journey that dead-ends before the goal is
+   a finding waiting to happen. Ground each entry in a real code location
+   (page/component/route).
+2. **Cross-layer contracts.** For every data field this feature creates or
+   changes: where is it produced (server), where must it be displayed or
+   consumed (each client, each surface)? Enumerate producer → consumer pairs.
+   A field produced but never consumed, or consumed on one platform but not
+   its sibling, is a coverage gap.
+3. **Content-language matrix.** For every user-visible string: is it viewer-UI
+   language, content-original language, or receiver-account language? Who
+   decides, and is a decision recorded?
+4. **State machine & lifecycle.** All states of the core object, all
+   transitions, and who/what can observe each transition. Include the
+   non-happy paths (rejected/expired/deleted/retried).
+5. **Observability.** What metric or log proves this feature works in
+   production, per the repo's observability rules?
+6. **Platform parity.** Which sibling platforms (desktop/mobile/admin) must
+   ship the equivalent surface?
+
+Ground every enumerated item in something real: a route, a component, a table,
+an existing sibling feature. Items you cannot ground, mark `speculative` —
+they may still be raised as questions but not as blockers.
+
+**Phase 2 — Diff against the plan.**
+
+Now read the plan. For every Phase-1 item, classify: `covered` (plan addresses
+it), `excluded` (plan explicitly declares it out of scope — this is fine),
+`absent` (plan neither covers nor excludes it). Every grounded `absent` item
+is a candidate finding.
+
+### Evidence standard (differs from other reviewers)
+
+Your findings cite the **enumeration source** — the concrete entry point,
+producer→consumer pair, journey step, or state transition, with its code
+location — not a line in the plan. "The plan does not mention X" is the
+finding itself, never grounds to dismiss it; what makes it strong is that X
+demonstrably exists in the codebase or requirement.
+
+### Severity calibration
+
+- `critical/major`: a grounded absent item on a user-goal path (user cannot
+  complete the journey), a cross-layer contract with a missing consumer, or an
+  undecided language-source for outbound copy.
+- `minor/suggestion`: absent observability detail, speculative items,
+  parity gaps the plan plausibly deferred.
+
+### DO NOT
+
+- Do not re-review what the plan says (architecture quality, wording, risks
+  of stated designs) — that is Reviewers A–E's territory. You only report
+  grounded `absent` items and dead-end journeys.
+- Do not pad: three grounded absences beat ten speculative ones.
+
+**Findings outside your designated scope will be ignored by the gate.**
+
+---
+
 ## Verifier (finding skeptic)
 
 Spawn one verifier per iteration, after reviewers return. Give it: the plan
-artifact, the context summary, and the list of critical/major findings
+artifact, the context summary, codebase access when Reviewer F coverage
+findings are present (checking an enumeration source's existence requires
+reading the code, not just the plan), and the list of critical/major findings
 (finding + evidence + recommendation only — strip the reviewer's score,
 summary, and reasoning so it judges the finding, not the reviewer).
 
@@ -290,6 +371,14 @@ summary, and reasoning so it judges the finding, not the reviewer).
 >   issue is outside the stated review surface, or the evidence is too vague
 >   to act on ("might be a problem", "consider whether"). Quote the plan text
 >   or surface rule that refutes it.
+>   **Exception — Reviewer F coverage findings only** (no other lane may
+>   invoke this — a missing-item claim from Reviewers A–E follows the normal
+>   vagueness bar):
+>   these cite an enumeration source (entry point, contract pair, journey
+>   step) instead of plan text. Refute only by showing the plan covers it,
+>   explicitly excludes it, or the cited source does not exist in the
+>   codebase/requirement. Never refute a coverage finding as "vague" merely
+>   because the plan is silent about it — silence is the finding.
 > - `CONFIRMED`: you genuinely tried to refute it and failed — the gap is
 >   real, in-surface, and evidence-backed. State in one sentence why your
 >   refutation failed.

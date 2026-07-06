@@ -66,7 +66,7 @@ Each reviewer MUST output their review as a JSON block within markdown code fenc
 
 ```json
 {
-  "reviewer": "A|B|C|D|E",
+  "reviewer": "A|B|C|D|E|F",
   "iteration": 1,
   "score": 2,
   "summary": "One-paragraph overall assessment of the plan",
@@ -93,7 +93,7 @@ Each reviewer MUST output their review as a JSON block within markdown code fenc
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| `reviewer` | Yes | Must match assigned role (A/B/C/D/E) |
+| `reviewer` | Yes | Must match assigned role (A/B/C/D/E/F) |
 | `iteration` | Yes | Current review loop iteration number. This is not capped by this skill; the outer harness owns runtime budget. |
 | `score` | Yes | Must be one of: 2, 1, -1, -2 |
 | `summary` | Yes | 1-3 sentences |

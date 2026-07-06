@@ -71,11 +71,50 @@ Two secondary brakes, checked every iteration:
 | C | Quality & Conventions | Project conventions, testability, clarity, reuse, maintainability |
 | D | UX/UI Design | User journeys, states, design-system compliance, platform parity |
 | E | Product & Business Value | MVP scope, priority, business value, success metrics, rollout |
+| F | Blind-Spot Reconstruction | Independent coverage enumeration from requirement + codebase, diffed against the plan |
 
 A, B, C are always active. Activate D when the plan changes UI, user journeys,
 user-visible states, or frontend data shapes. Activate E when the plan changes
 product behavior, user-facing APIs, workflow scope, pricing, release strategy,
-or measurable business outcomes.
+or measurable business outcomes. Activate F when the plan adds or changes
+user-facing behavior or crosses layers (client↔server) — skip it only for pure
+refactors and doc-only plans.
+
+**Reviewer F is structurally different: it hunts omissions, not defects.**
+Every other reviewer reads the plan and attacks what it says; a plan's most
+expensive failures are the things it never mentions, and those cannot be found
+by reading the plan harder (real-world case study: a 728-line cross-platform
+feature shipped with no language-source decision, an unreachable
+rejection-reason journey, and no observability — none of which existed as
+attackable text). F therefore runs a two-phase protocol: **Phase 1 blind** —
+without reading the plan body, enumerate the coverage baseline from the
+one-line requirement + codebase (entry-point/journey matrix, cross-layer
+producer→consumer contracts, content-language matrix, state machine,
+observability, platform parity), grounding every item in a real code location;
+**Phase 2 diff** — read the plan and classify each item `covered` / `excluded`
+(explicitly out of scope — fine) / `absent`. Grounded `absent` items become
+findings. Full rubric in `references/reviewer-prompts.md`.
+
+F's loop mechanics differ from other lanes, by design:
+
+- **Phase 1 runs once, at the discovery sweep**, and the resulting coverage
+  baseline is frozen into `attributionEvidence.coverageBaseline`. Later sweeps
+  never re-enumerate: F only re-diffs the revised plan against the frozen
+  baseline (cheap), and F never receives the revision changelog — the
+  changelog would leak what the plan just added and re-anchor the diff.
+- **Isolation is mechanical, not behavioral.** Phase 1 must run as an
+  isolated subagent whose inputs physically exclude the plan body (one-line
+  requirement + acceptance criteria + codebase access only); Phase 2 delivers
+  the plan in a second message. Never run F inline in the context that
+  authored or revised the plan — that context has already read every line,
+  so its "blind" enumeration is fiction. If isolation is unavailable, set
+  `blindProtocol: "compromised"` in the output and treat F findings as
+  ordinary reviewer findings.
+- **F findings do not increment `latentMissedStreak`.** An omission by
+  definition existed in the original artifact, so a frozen-baseline item
+  surfacing later must not trip the `review_process_defect` brake — that
+  brake exists to catch defective sweeps, and F re-diffing a frozen baseline
+  is the loop working as designed.
 
 **Reviewer D is not generic.** When D is active, its prompt must require
 reading the repo's design-system authority (tokens doc + UI review checklist +
@@ -125,6 +164,15 @@ The loop is adversarial in both directions:
   `CONFIRMED` findings become open blockers. `REFUTED` findings are downgraded
   to suggestions with the refutation recorded.
 
+  **Reviewer F coverage findings have their own evidence bar.** An F finding
+  is evidenced by its *enumeration source* — a concrete
+  entry point, producer→consumer contract pair, journey step, or state
+  transition that demonstrably exists in the codebase or requirement. The
+  verifier refutes it only by showing the plan covers it, explicitly excludes
+  it, or the enumeration source does not exist. "The plan doesn't mention it"
+  is the finding itself, never grounds to refute it as vague — the vagueness
+  rule exists to kill unsupported opinions, not omission evidence.
+
 Why both sides: attack-only review generates churn — plausible-sounding
 blockers that restart the loop forever. Verification-only review goes soft.
 Attack plus refutation is what makes "no blockers remain" mean something.
@@ -146,6 +194,13 @@ Reviewers may mark blockers only inside this surface — unrelated documents,
 files, tests, or harness behavior stay outside the blocker surface unless
 explicitly listed as context. Findings that need external facts or broader
 scope become `needs_decision` or `missing_evidence`, never `open`.
+
+**When Reviewer F is active, the codebase is part of the frozen surface** as
+coverage-enumeration context: a coverage gap grounded in in-scope code (an
+entry point, contract pair, or journey the product demonstrably has) is a gap
+*of the plan*, inside the surface — not scope expansion. Only facts about
+unrelated systems or genuinely out-of-scope product areas remain
+`scope_expansion`.
 
 Store attribution evidence when the surface is frozen:
 
@@ -226,7 +281,7 @@ Never feed previous review prose into later reviewers.
   "severity": "critical|major|minor|suggestion",
   "status": "open|resolved|wontfix|needs_decision|missing_evidence|refuted|stale",
   "verification": "confirmed|refuted|needs_decision|not_required",
-  "reviewer": "A|B|C|D|E",
+  "reviewer": "A|B|C|D|E|F",
   "firstSeenIteration": 1,
   "lastSeenIteration": 1,
   "materialRevisionAttempts": 0,
@@ -272,6 +327,11 @@ before it affects convergence:
 | `scope_expansion` | Needs facts outside the frozen surface | Not `open` in this loop; `blocked` with `needs_decision`/`missing_evidence`, or restart with a new surface |
 | `unsupported` | No concrete evidence | Minor/suggestion; never blocks |
 
+Attribution note for Reviewer F: a coverage finding grounded in in-scope
+codebase is classified by the surface rule above — it is latent artifact
+incompleteness (open blocker), not `scope_expansion`, and it is exempt from
+the `latentMissedStreak` counter (see Reviewer F mechanics).
+
 If revisions keep introducing *different* `revision_introduced` blockers in the
 same section after material fixes, that is artifact instability — `blocked`,
 not more loops. If `attributionEvidence` is missing, return `blocked` with
@@ -295,8 +355,11 @@ not a re-ask.
 
 When no open blockers remain, run a held-out sweep before `passed`: a fresh
 reviewer set receives only the final plan, context summary, and acceptance
-criteria — no ledger, no changelog. Held-out critical/major findings still go
-through the verifier.
+criteria — no ledger, no changelog. When F was active, the held-out set
+includes a fresh F running the full two-phase protocol (Phase 1: one-line
+requirement, acceptance criteria, codebase; Phase 2: the final plan) — the
+final gate must include fresh eyes on omissions, not only on stated text.
+Held-out critical/major findings still go through the verifier.
 
 - No confirmed blockers → converged, `passed`. Minor/suggestion findings are
   recorded as non-blocking notes; they do not reopen the loop.
@@ -355,9 +418,9 @@ Every iteration ends with one JSON block:
   "harnessStatus": "continue|passed|blocked",
   "reason": "short reason for the status",
   "reasonCode": "open_blockers|held_out_required|converged|plateau|oscillation|artifact_instability|missing_evidence|needs_decision|review_process_defect|reviewer_failure|budget_exhausted",
-  "activeReviewers": ["A", "B", "C", "D"],
+  "activeReviewers": ["A", "B", "C", "D", "F"],
   "surfaceId": "stable hash or short name for the bounded review surface",
-  "scores": {"A": 1, "B": 2, "C": 1, "D": -1},
+  "scores": {"A": 1, "B": 2, "C": 1, "D": -1, "F": 1},
   "convergence": {
     "openBlockers": 1,
     "confirmedFindings": 3,
