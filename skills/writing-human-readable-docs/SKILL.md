@@ -1,6 +1,6 @@
 ---
 name: writing-human-readable-docs
-description: Write or revise a human-readable technical doc (briefing, upgrade notes, announcement, onboarding) so that a reader with ZERO context can understand it. Use when the user asks to write/refine a 宣讲文档/升级说明/briefing/annoucement, or when a doc reads like "天书"/"看不懂"。
+description: Write or revise a human-readable technical doc (briefing, upgrade notes, announcement, onboarding guide, README, release notes, tutorial) so that a reader with ZERO context can understand AND act on it. Use whenever the user asks to write/refine/review a 宣讲文档/升级说明/公告/上手指南/发版说明/briefing/announcement/README, complains a doc reads like "天书"/"看不懂"/"太复杂"/"语气怪", or any technical writing targets a cross-functional or external audience (not just the engineers who built it) — even if the user doesn't explicitly ask for "readability".
 ---
 
 # Writing Human-Readable Docs（写人类可读的技术文档）
@@ -17,6 +17,14 @@ description: Write or revise a human-readable technical doc (briefing, upgrade n
 - 写给跨职能听众（不只工程师）的任何技术说明
 
 ## 核心原则（按重要性排序）
+
+### 0. 先定义读者与成功动作（写任何字之前）
+
+一句话写下：**读者是谁、他们已经知道什么、读完这份文档他们要能做什么**。
+文档的验收标准不是「读者看懂了」，而是「读者能完成那个动作」（升级、迁移、
+配置、决策、转述给别人）。这句话决定后面所有取舍：解释多深、砍掉哪些
+工程细节、行动指令放多前。没有这句话的文档，最常见的死法是「工程师写给
+自己看的备忘录」。
 
 ### 1. 零上下文假设（最关键）
 
@@ -46,17 +54,33 @@ description: Write or revise a human-readable technical doc (briefing, upgrade n
 反面：一段 150 字散文塞「场景 + 旧做法 + 问题 + 新方案 + 原因」。
 正面：拆成「- 场景 / - 问题 / - 正解」三行。
 
-### 5. 正式语气
+### 5. 版式是设计，不是排水（灰墙防治）
+
+一坨灰压压的连续散文会让读者 3 秒内放弃。三条硬规则：**每屏至少一个
+视觉锚点**（标题/列表/表格/代码块/加粗，连续 8 行纯散文即灰墙）、
+**信息形态决定 Markdown 元素**（并列→列表、对比→表格、步骤→有序列表、
+命令→代码块，选型表见 references）、**加粗是稀缺资源**（每段 ≤2 处）。
+讲解采**渐进式**：金字塔（结论先行）+ 先具象后抽象（例子先于定义）+
+一屏新概念 ≤3 个。完整规范见 `references/markdown-typography.md`。
+
+### 6. 第一屏一段话摘要（文档级 front-loading）
+
+文档开头（术语表之前）用 3-4 句话回答：这是什么、跟读者有什么关系、
+读者需要做什么、什么时候生效。扫读者只读第一屏——第一屏没有答案的文档，
+对 80% 的读者等于没写。checklist 里的 front-loading 是段落级的，这条是
+文档级的，两者都要。
+
+### 7. 正式语气
 
 去口语（「大家」「卡半天」「人肉」「别人才发现」）、去营销腔（「核心 / 闭环 / 兜底 / 单一来源 / 守护」）、去口号收束（「靠人换靠机制」）、去对讲者旁白（「宣讲时不要求记忆命令」）。称呼统一「成员 / 同学」。
 
-### 6. 数字用模糊量
+### 8. 数字用模糊量
 
 易漂移的小数字（测试数、行数、cell 数）用「200+」「manifest 矩阵」这种模糊量，不写死「274」「28-cell」——过两天加一个就过时。稳定的数字（40 个 skills、8 个 submodule）可精确。
 
-## 可读性 8 维度自检
+## 可读性 9 维度自检
 
-写完后逐项打分（1-5），目标 ≥ 30/40：
+写完后逐项打分（1-5），目标 ≥ 34/45：
 
 1. **句子长度**：单句 ≤ 25 字，长句拆 2-3 句。
 2. **段落密度**：段落 ≤ 5 行，一段一要点。
@@ -66,19 +90,30 @@ description: Write or revise a human-readable technical doc (briefing, upgrade n
 6. **术语密度与解释**：首现术语有解释，单位文字术语量不超载。
 7. **过渡与连贯**：章节顺序符合「背景→问题→方案→操作」，段间有过渡。
 8. **冗余与重复**：同一信息不重复，废话凑数删掉。
+9. **版式与视觉锚点**：无灰墙屏（每屏有锚点）、元素选型对路、标题节奏
+   均匀、TL;DR 在第一屏。
 
 详见 `references/readability-checklist.md`。
 
 ## 工作流
 
 1. **摸清要讲什么**——读 diff / 问用户，确认核心内容。
-2. **列大纲**——背景→问题→方案→使用→效果→行动，每节一句话要点。
+2. **列大纲 + 屏分布规划**——按骨架模板列节（每节一句话要点），同时预估
+   每节几屏、每屏的视觉锚点是什么（`references/markdown-typography.md` §3）。
 3. **写初稿**——按核心原则写，术语表前置。
 4. **自检去重**——同一断言只在最合适处详述，其他交叉引用。
-5. **可读性 8 维度自检**——逐项打分，<4 的维度改。
-6. **零上下文 agent 评审**（可选但推荐）——起 2-3 个不同背景的 agent（产品/QA/新人）只读文档报告看不懂的地方，据此改。
-7. **可读性 agent 复评**——回归验证分数提升。
-8. **定稿**。
+5. **可读性 9 维度自检**——逐项打分，<4 的维度改。注意：**自评分数普遍
+   虚高一档**（作者 agent 给自己打 4-5 是常态），自检只用来抓明显问题，
+   分数以第 7 步独立复评为准。
+6. **零上下文 agent 评审**——起 2-3 个不同背景的 agent（产品/QA/新人）只读
+   文档报告看不懂的地方，据此改。**对外发布、跨职能宣讲、或 800 字以上的
+   文档必跑**；只有短小的内部速记可跳过。视角与 prompt 模板见
+   `references/zero-context-review-prompts.md`（占位符换成目标工程的实际
+   子系统名）。
+7. **可读性 agent 复评**——独立 agent 按 9 维度打分做回归验证。
+8. **收敛即停**（迭代有预算）：复评 ≥ 34/45 且三方评审无「完全看不懂」级
+   问题 → 定稿；最多两轮修订，仍有残留的小问题列成文末「已知取舍」而不是
+   无限打磨——文档的边际收益在两轮后急剧下降。
 
 ## 关键避免
 
@@ -89,7 +124,24 @@ description: Write or revise a human-readable technical doc (briefing, upgrade n
 - **不要口语 / 营销腔**——正式语气
 - **不要写死易漂移数字**——用 200+
 - **不要对讲者旁白**——文档是给读者看的，不是描述宣讲会议
+- **不要灰墙**——连续 8 行以上纯散文必须重排；每屏要有视觉锚点
 
-## 参考实例
+## 骨架模板（列大纲时的默认起点）
 
-`docs/specs/20260703-workspace-upgrade-briefing/workspace-upgrade-briefing.md` 是按本 skill 经过多轮迭代写成的范例（零上下文可懂、正式语气、可读性 31/40）。写新文档时可对照其结构。
+```markdown
+# <标题：读者视角的一句话，不是工程视角>
+
+<第一屏摘要：这是什么 / 跟你有什么关系 / 你要做什么 / 什么时候生效>
+
+## 术语表          ← 贯穿全文的术语，一表定义
+## 背景            ← 读者需要的最小前情，不是项目史
+## 问题            ← 读者能感知的痛，不是内部技术债清单
+## 方案            ← 做了什么改变（对照表：此前/现）
+## 你要做什么      ← 行动指令前置到具体：命令/步骤/截止时间
+## 效果与验证      ← 怎么确认自己弄对了
+## FAQ / 已知取舍
+```
+
+按需增删小节，但「第一屏摘要」与「你要做什么」不可省——前者服务扫读者，
+后者服务成功动作（原则 0）。范例文档留在各自的源工程里；带走本 skill 时
+不依赖任何外部路径。
