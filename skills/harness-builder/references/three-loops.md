@@ -108,13 +108,15 @@ git commit     ▶ 目標模組有 pending → DENY
 
 ```
 SessionStart
-  ├─ 今日已消費？（打卡檢查：inbox 內 consuming(今日) 標記，
-  │   或帳本檔今日 git diff 出現收帳行——git 即狀態，跨機器免新設施）
+  ├─ 今日已消費？（打卡檢查，按推送模式：trunk 直推型看 inbox 內
+  │   consuming(今日) 標記或帳本檔今日 diff 的收帳行；嚴格 CR 型
+  │   ls-remote 查當日 harness/claims/* 分支——git 即狀態，免新設施）
   ├─ 已打卡 → 零打擾（一天 N 個 session 只消費一次）
   └─ 未打卡且 backlog>0 → 注入派工指令：
        派一個背景子代理（便宜模型、單拍預算）消費一條：
-         1. pull --rebase → 選單 → 改 status: consuming(<今日>) 單獨 commit
-            → 立即 push（認領鎖，衝突語義見 pitfalls #14）
+         1. 認領鎖（模式見 mechanism-toolbox 多人協作節：trunk 直推型
+            = consuming commit+push、衝突＝撞鎖；嚴格 CR 型 = 推
+            harness/claims/<今日>--<條目> 新分支、已存在＝撞鎖）
          2. 照消費 skill 節拍執行 → 收帳 converted/rejected
        主 session 繼續用戶任務，零干擾
 Stop

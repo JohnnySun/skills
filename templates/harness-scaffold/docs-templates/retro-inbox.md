@@ -13,5 +13,7 @@
 > - status: new | consuming(<YYYY-MM-DD>) | converted(<WO/commit>) | rejected(<原因>)
 > （consuming = 消費認領鎖兼當日打卡：pull → 改狀態單獨 commit → 立即 push；
 >  push 被拒先 rebase：認領行起衝突＝撞鎖換條，無衝突重 push。本檔不得標
->  merge=union（會吃掉撞鎖衝突）。早於今日的 consuming 是殭屍鎖，優先回收）
+>  merge=union（會吃掉撞鎖衝突）。早於今日的 consuming 是殭屍鎖，優先回收。
+>  主幹受保護不可直推的工程：鎖改用 harness/claims/<日期>--<條目> 分支創建
+>  的原子性，狀態行隨工作 PR 走——見 harness-operate Mode B）
 > ```
