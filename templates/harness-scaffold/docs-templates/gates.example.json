@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "module": "server",
+  "trusted_suite": "./scripts/test-offline.sh",
+  "iteration_hint": "go test ./... -run <Test>（迭代用，不算收環）",
+  "known_failures": {
+    "router": [
+      {
+        "pattern": "TestExample_.*",
+        "class": "env-dependent",
+        "reason": "示例：DB 依賴，無 tunnel 時 panic",
+        "registered": "2026-07-06",
+        "debt_doc": "docs/unit-test-debt.md"
+      }
+    ]
+  },
+  "critical_paths": [
+    {
+      "glob": "src/pages/pay/**",
+      "required_spec": "tests/pay-flow.spec.js",
+      "reason": "計費路徑（示例）"
+    }
+  ]
+}

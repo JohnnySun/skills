@@ -1,0 +1,20 @@
+{
+  "_comment": "放 <repo>/.codex/hooks.json。與 Claude Code 的差異：command 是單一字串（無 args 陣列）、路徑相對 repo root。先在 config.toml 開 [features] hooks=true；改動後要在 Codex TUI 跑 /hooks 重新 trust，否則靜默不生效（見 harness-builder references/platform-hooks.md §6）。",
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "node scripts/hook-router.mjs", "timeout": 10 }] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "node scripts/hook-router.mjs", "timeout": 10 }] }
+    ],
+    "PostToolUse": [
+      { "hooks": [{ "type": "command", "command": "node scripts/hook-router.mjs", "timeout": 10 }] }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "node scripts/hook-router.mjs", "timeout": 10 }] }
+    ],
+    "SubagentStop": [
+      { "hooks": [{ "type": "command", "command": "node scripts/hook-router.mjs", "timeout": 10 }] }
+    ]
+  }
+}
