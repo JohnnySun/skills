@@ -1,0 +1,4 @@
+# union merge 只給「純追加、永不原地改行」的帳本（兩邊追加都保留、不衝突）。
+# 狀態行原地改的檔（retro-inbox、work-orders）絕不可標 union：union 會把
+# 「兩人認領同一條」的 rebase 衝突靜默吃掉，認領鎖退化成自覺。JSON 禁用。
+docs/harness/deviation-log.md merge=union
