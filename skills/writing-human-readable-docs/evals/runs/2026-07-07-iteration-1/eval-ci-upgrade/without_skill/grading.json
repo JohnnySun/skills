@@ -1,0 +1,39 @@
+{
+  "expectations": [
+    {
+      "text": "tldr-first-screen: 開頭 15 行內有 TL;DR/一分鐘版本，含生效日期與讀者要做的事",
+      "passed": false,
+      "evidence": "全文（行 1-39）搜尋不到任何『TL;DR』或『一分鐘版本』標籤/區塊。前 15 行（行 1-15）直接以『## 這次改什麼』開場敘述生效日期，第 13 行雖有『我需要做什麼（三步遷移）』標題，但其下實際三步內容在行 17-19，超出前 15 行範圍，且沒有將『生效日期＋讀者要做的事』收攏成單一速覽區塊。"
+    },
+    {
+      "text": "terms-explained: GitHub Actions/workflow/secrets 首現有解釋或術語表",
+      "passed": false,
+      "evidence": "全文無術語表。『GitHub Actions』首現於行 5，僅作為目標系統名稱帶過，未解釋是什麼；『workflow』首現於行 17『自己專案的 workflow 設定裡』，完全沒有解釋這個詞的意思；僅『Secrets』在行 21-23 透過『例如 API key、密碼、憑證等機密資訊』的舉例間接說明,三項中兩項（GitHub Actions、workflow）未被解釋。"
+    },
+    {
+      "text": "action-steps-structured: 遷移三步用有序列表，模板路徑用代碼格式",
+      "passed": true,
+      "evidence": "行 17-19 為 markdown 有序列表『1./2./3.』；行 17 模板路徑 `.github/workflows/template.yml` 使用反引號代碼格式。"
+    },
+    {
+      "text": "all-facts-present: 7/13 生效、7/20 關停、secrets 需手動重配、#ci-migration 全部出現",
+      "passed": true,
+      "evidence": "行 5 出現 2026-07-13 生效；行 7/39 出現 2026-07-20 關停；行 21-27 說明 secrets 不會自動搬需手動重配；行 31 出現 #ci-migration 頻道。"
+    },
+    {
+      "text": "no-gray-wall: 無連續超過 8 行的純散文段",
+      "passed": true,
+      "evidence": "以「非空、非列表、非標題、非表格、非代碼圍欄」為純散文行的判定跑腳本，全文最長連續純散文行數為 1 行（第 5 行），遠低於 8 行門檻。"
+    },
+    {
+      "text": "deadlines-prominent: 兩個日期以加粗/標題/表格突出",
+      "passed": true,
+      "evidence": "行 5『**2026-07-13（下週一）**』、行 7『**2026-07-20 正式關停**』皆加粗；『時間軸總覽』表格（行 33-39）再次以表格呈現兩個日期。"
+    },
+    {
+      "text": "traditional-chinese: 全文無簡體字",
+      "passed": true,
+      "evidence": "以簡體字符集（们/说/读/写/后/务/见/复/关/万/与/开/发/环/贝/纪/线/换）逐字掃描，全文無命中。"
+    }
+  ]
+}

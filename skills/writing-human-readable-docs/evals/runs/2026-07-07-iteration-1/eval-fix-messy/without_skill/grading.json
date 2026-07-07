@@ -1,0 +1,34 @@
+{
+  "expectations": [
+    {
+      "text": "facts-preserved: key 格式/TTL 900/灰度節奏/vault 路徑/timeout 值與 120s cap/rgw2_ 前綴/15% 內存/雙寫語義全部保留未改",
+      "passed": true,
+      "evidence": "逐項對照 fixtures-messy-doc.md：key 格式與 TTL 300→900（表格行 15-16）；灰度節奏 5%/50%(下週三)/100%(下下週一)（表格行 32-36）；vault 路徑 secret/relay/v2/client（行 49、66）；timeout 2s/30s、v1 5s/60s、上限 120s（表格行 19-20、行 51、69）；rgw2_ 前綴（表格行 21、行 54）；記憶體 +15%（行 58）；雙寫語義（行 24、58）。全部與原文一致，未見竄改或遺漏。"
+    },
+    {
+      "text": "background-added: 開頭新增 RelayGW 是什麼與誰受影響的鋪墊",
+      "passed": true,
+      "evidence": "行 3 blockquote『適用對象：所有接入 RelayGW（relay 服務）的業務工程師...』與行 5-7『一句話總結：RelayGW 正在從 v1 灰度切換到 v2。如果你的服務...』在開頭即交代適用對象與受影響條件，原文完全沒有這類鋪墊；唯對『RelayGW 是什麼』僅以『relay 服務』帶過，說明深度略薄於 with_skill 版本的『內部請求轉發閘道』定義，但仍構成有效的開頭背景鋪墊。"
+    },
+    {
+      "text": "terms-handled: singleflight/affinity/mTLS 首現有解釋或術語表",
+      "passed": false,
+      "evidence": "全文無術語表。singleflight 有解釋（行 24『同一個 key 的多個請求會互相卡住（術語叫 singleflight 擊穿）』），但 affinity 全文 7 處出現（行 1/7/15/16/44/58）皆直接使用『affinity key』一詞，從未解釋這是什麼、為何存在；mTLS 全文 4 處出現（行 18/38/49/66）也只說『新的驗證方式』『不接受 Basic Auth』，從未解釋 mTLS（雙向 TLS）本身的含意。三項術語中兩項（affinity、mTLS）首現無解釋。"
+    },
+    {
+      "text": "structured: 多主題長散文被拆為小節/列表，且至少含一個表格",
+      "passed": true,
+      "evidence": "原文為 6 段連續散文，revised.md 拆為 5 個 H2 小節（改了什麼/灰度時程/你需要做的事/常見問題/有問題找誰），含 2 個表格（變更對照表行 13-22、灰度時程表行 32-36）與多層 checklist（3.1-3.4，行 44-59）。"
+    },
+    {
+      "text": "audience-action: 有按讀者情況分流的『你要做什麼』內容（讀 redis 的/有 dashboard 的/一般調用方）",
+      "passed": true,
+      "evidence": "行 44『### 3.1 如果你的服務會直接讀 Redis 裡的 affinity key』、行 48『### 3.2 如果你被切到 v2 endpoint』、行 53『### 3.3 如果你有自己維護監控 Dashboard』分別對應讀 redis 的／一般調用方／有 dashboard 的三種讀者情境；行 7 另明確交代『其他情況只需要留意切流時程即可』，完整覆蓋三組讀者。"
+    },
+    {
+      "text": "tone-fixed: 『別私聊我』『不要來問』類語氣被中性化",
+      "passed": true,
+      "evidence": "原文『別私聊我』『401 了不要來問為什麼』已消失；行 65-66 FAQ 改寫為中性問答『切到 v2 之後打 API 收到 401，怎麼辦？』；行 78『有任何問題請洽 @relay-oncall，不要私訊個人』語氣從個人抱怨轉為中性陳述。"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "staging-deploy-onboarding",
+  "prompt": "新人首次部署 staging 的 onboarding（短、明天就要）",
+  "assertions": [
+    "prereq-first: VPN 與 deployer 申請（含約半天審批）出現在步驟之前",
+    "steps-with-checkpoints: 三步有序列表各帶命令代碼塊；驗證步含 healthy 與 healthz 200 核對點",
+    "pitfall-prominent: VPN timeout 坑顯著標出且說明『不報 VPN 錯誤』",
+    "rollback-present: dctl rollback 出現",
+    "short-enough: 正文 ≤60 行（任務要求別太長）",
+    "traditional-chinese: 全文無簡體字"
+  ]
+}

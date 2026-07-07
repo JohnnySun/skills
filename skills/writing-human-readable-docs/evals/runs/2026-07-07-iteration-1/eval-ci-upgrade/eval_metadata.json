@@ -1,0 +1,14 @@
+{
+  "eval_id": 0,
+  "eval_name": "ci-upgrade-notes",
+  "prompt": "CI Jenkins→GHA 升級說明（讀者：沒用過 GHA 的全公司工程師）",
+  "assertions": [
+    "tldr-first-screen: 開頭 15 行內有 TL;DR/一分鐘版本，含生效日期與讀者要做的事",
+    "terms-explained: GitHub Actions/workflow/secrets 首現有解釋或術語表",
+    "action-steps-structured: 遷移三步用有序列表，模板路徑用代碼格式",
+    "all-facts-present: 7/13 生效、7/20 關停、secrets 需手動重配、#ci-migration 全部出現",
+    "no-gray-wall: 無連續超過 8 行的純散文段",
+    "deadlines-prominent: 兩個日期以加粗/標題/表格突出",
+    "traditional-chinese: 全文無簡體字"
+  ]
+}

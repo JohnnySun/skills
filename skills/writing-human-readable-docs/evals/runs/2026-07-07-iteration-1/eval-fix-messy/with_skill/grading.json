@@ -1,0 +1,39 @@
+{
+  "expectations": [
+    {
+      "text": "facts-preserved: key 格式/TTL 900/灰度節奏/vault 路徑/timeout 值與 120s cap/rgw2_ 前綴/15% 內存/雙寫語義全部保留未改",
+      "passed": true,
+      "evidence": "逐項對照 fixtures-messy-doc.md：key 格式 rg:aff:{cid}→rg2:aff:{cid}:{bucket}（行 36-38）；TTL 300→900（行 38）；灰度節奏 5%/50%(下週三)/100%(下下週一)（行 56-62）；vault 路徑 secret/relay/v2/client（行 42-43）；timeout 2s/30s、v1 為 5s/60s、上限 120s（行 45-48）；rgw2_ 前綴（行 49-51）；記憶體 +15%（行 52-54）；雙寫語義（行 24、52-54）。全部與原文一致，無遺漏或竄改，且對『新 prewarm 腳本路徑原文未提供』誠實標注未杜撰（行 40-41）。"
+    },
+    {
+      "text": "background-added: 開頭新增 RelayGW 是什麼與誰受影響的鋪墊",
+      "passed": true,
+      "evidence": "TL;DR（行 3-10）開頭即定義『RelayGW（內部請求轉發閘道）正在把 v1 逐步換成 v2』並說明受影響條件『如果你的服務在灰度名單內...』，原文（fixture）完全沒有這類開場鋪墊。"
+    },
+    {
+      "text": "terms-handled: singleflight/affinity/mTLS 首現有解釋或術語表",
+      "passed": true,
+      "evidence": "行 12-24 術語表逐一定義 RelayGW、灰度切流、Affinity（行 18）、Bucket 分片、Singleflight 擊穿（行 20）、TTL、mTLS（行 22）、Vault、雙寫，三個目標術語全部涵蓋。"
+    },
+    {
+      "text": "structured: 多主題長散文被拆為小節/列表，且至少含一個表格",
+      "passed": true,
+      "evidence": "原文為 6 段連續散文，revised.md 拆為 8 個 H2 小節（TL;DR/術語表/背景/影響/排程/行動/FAQ），含 2 個表格（術語表行 12-24、灰度排程表行 58-62）與多處 checklist 列表（行 69-74）。"
+    },
+    {
+      "text": "audience-action: 有按讀者情況分流的『你要做什麼』內容（讀 redis 的/有 dashboard 的/一般調用方）",
+      "passed": false,
+      "evidence": "『你要做的事（Checklist）』（行 67-75）是單一扁平清單，項目本身有條件式描述（如『服務有直接讀 Redis 的 affinity key →』行 69、『更新自己的監控 dashboard』行 72），但全文搜尋不到任何『不在灰度名單/一般調用方不用做什麼』的收斂說明——對照 without_skill 版本明確寫出『其他情況只需要留意切流時程即可』，with_skill 版本缺少對『一般調用方（未受影響者）』這個讀者群體的明確交代，三組讀者情境未完整覆蓋。"
+    },
+    {
+      "text": "tone-fixed: 『別私聊我』『不要來問』類語氣被中性化",
+      "passed": true,
+      "evidence": "原文『別私聊我』『401 了不要來問為什麼』已消失；行 78-79 FAQ 改寫為中性問答『遇到 401 怎麼辦？先檢查 mTLS 憑證是否正確拉取』；行 83 聯絡窗口改寫為『透過 @relay-oncall 詢問,不要私訊個人』，語氣從個人抱怨轉為中性政策陳述。"
+    },
+    {
+      "text": "with-skill-extra: with_skill 側另有 diagnosis.md 且含 9 維打分",
+      "passed": true,
+      "evidence": "diagnosis.md 存在，且行 7-31 有『原文 9 維打分』表格（句子長度/段落密度/資訊層級/掃讀性/列表與表格/術語密度與解釋/過渡與連貫/冗餘與重複/版式與視覺錨點，共 9 維，總分 13/45），行 61-86 另有修訂後 9 維自評（42/45）。"
+    }
+  ]
+}

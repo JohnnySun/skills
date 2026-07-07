@@ -1,0 +1,14 @@
+{
+  "eval_id": 1,
+  "eval_name": "fix-messy-relay-doc",
+  "prompt": "修訂 RelayGW v2 天書文檔（讀者：不熟 relay 內部的業務工程師）",
+  "assertions": [
+    "facts-preserved: key 格式/TTL 900/灰度節奏/vault 路徑/timeout 值與 120s cap/rgw2_ 前綴/15% 內存/雙寫語義全部保留未改",
+    "background-added: 開頭新增 RelayGW 是什麼與誰受影響的鋪墊",
+    "terms-handled: singleflight/affinity/mTLS 首現有解釋或術語表",
+    "structured: 多主題長散文被拆為小節/列表，且至少含一個表格",
+    "audience-action: 有按讀者情況分流的『你要做什麼』內容（讀 redis 的/有 dashboard 的/一般調用方）",
+    "tone-fixed: 『別私聊我』『不要來問』類語氣被中性化",
+    "with-skill-extra: with_skill 側另有 diagnosis.md 且含 9 維打分"
+  ]
+}

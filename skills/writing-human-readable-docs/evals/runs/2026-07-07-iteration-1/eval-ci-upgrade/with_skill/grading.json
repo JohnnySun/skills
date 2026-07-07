@@ -1,0 +1,39 @@
+{
+  "expectations": [
+    {
+      "text": "tldr-first-screen: 開頭 15 行內有 TL;DR/一分鐘版本，含生效日期與讀者要做的事",
+      "passed": true,
+      "evidence": "行 3 明確標『**TL;DR**』標題；行 7『你要做什麼：3 步遷移...整體約 15 分鐘』；行 8『**2026-07-13（下週一）**新系統生效。**2026-07-20** 舊系統關閉』。三要素都在前 15 行內。"
+    },
+    {
+      "text": "terms-explained: GitHub Actions/workflow/secrets 首現有解釋或術語表",
+      "passed": true,
+      "evidence": "行 10-21 有完整術語表，逐一定義 CI、Jenkins、GitHub Actions（行 18）、工作流/workflow（行 19）、模板/template（行 20）、Secrets（行 21），三個目標術語全部涵蓋。"
+    },
+    {
+      "text": "action-steps-structured: 遷移三步用有序列表，模板路徑用代碼格式",
+      "passed": true,
+      "evidence": "行 40-42 為 markdown 有序列表『1./2./3.』；行 40 模板路徑 `.github/workflows/template.yml` 使用反引號代碼格式。"
+    },
+    {
+      "text": "all-facts-present: 7/13 生效、7/20 關停、secrets 需手動重配、#ci-migration 全部出現",
+      "passed": true,
+      "evidence": "行 8/25 出現 2026-07-13 生效；行 8/26 出現 2026-07-20 關閉；行 36/44-49 說明 secrets 不會自動搬需手動重配；行 66 出現 #ci-migration 頻道。"
+    },
+    {
+      "text": "no-gray-wall: 無連續超過 8 行的純散文段",
+      "passed": true,
+      "evidence": "以「非空、非列表、非標題、非表格、非代碼圍欄」為純散文行的判定跑腳本，全文最長連續純散文行數為 1 行（第 3 行），遠低於 8 行門檻。"
+    },
+    {
+      "text": "deadlines-prominent: 兩個日期以加粗/標題/表格突出",
+      "passed": true,
+      "evidence": "行 8『**2026-07-13（下週一）**』『**2026-07-20**』皆加粗；『時間表』(行 23-28) 與『這次改了什麼』表格 (行 32-36) 再次以列表/標題重複呈現。"
+    },
+    {
+      "text": "traditional-chinese: 全文無簡體字",
+      "passed": true,
+      "evidence": "以簡體字符集（们/说/读/写/后/务/见/复/关/万/与/开/发/环/贝/纪/线/换）逐字掃描，全文無命中。"
+    }
+  ]
+}

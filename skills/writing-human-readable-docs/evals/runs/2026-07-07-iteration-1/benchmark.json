@@ -1,0 +1,381 @@
+{
+ "metadata": {
+  "skill_name": "writing-human-readable-docs",
+  "skill_path": "/Users/bmy001/Work/ai-infra/skills/writing-human-readable-docs",
+  "executor_model": "claude-sonnet-5",
+  "analyzer_model": "claude-fable-5",
+  "timestamp": "2026-07-07T04:10:00Z",
+  "evals_run": [
+   0,
+   1,
+   2
+  ],
+  "runs_per_configuration": 1
+ },
+ "runs": [
+  {
+   "eval_id": 0,
+   "eval_name": "ci-upgrade-notes",
+   "configuration": "with_skill",
+   "run_number": 1,
+   "result": {
+    "pass_rate": 1.0,
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "time_seconds": 0,
+    "tokens": 0,
+    "tool_calls": 0,
+    "errors": 0
+   },
+   "expectations": [
+    {
+     "text": "tldr-first-screen: 開頭 15 行內有 TL;DR/一分鐘版本，含生效日期與讀者要做的事",
+     "passed": true,
+     "evidence": "行 3 明確標『**TL;DR**』標題；行 7『你要做什麼：3 步遷移...整體約 15 分鐘』；行 8『**2026-07-13（下週一）**新系統生效。**2026-07-20** 舊系統關閉』。三要素都在前 15 行內。"
+    },
+    {
+     "text": "terms-explained: GitHub Actions/workflow/secrets 首現有解釋或術語表",
+     "passed": true,
+     "evidence": "行 10-21 有完整術語表，逐一定義 CI、Jenkins、GitHub Actions（行 18）、工作流/workflow（行 19）、模板/template（行 20）、Secrets（行 21），三個目標術語全部涵蓋。"
+    },
+    {
+     "text": "action-steps-structured: 遷移三步用有序列表，模板路徑用代碼格式",
+     "passed": true,
+     "evidence": "行 40-42 為 markdown 有序列表『1./2./3.』；行 40 模板路徑 `.github/workflows/template.yml` 使用反引號代碼格式。"
+    },
+    {
+     "text": "all-facts-present: 7/13 生效、7/20 關停、secrets 需手動重配、#ci-migration 全部出現",
+     "passed": true,
+     "evidence": "行 8/25 出現 2026-07-13 生效；行 8/26 出現 2026-07-20 關閉；行 36/44-49 說明 secrets 不會自動搬需手動重配；行 66 出現 #ci-migration 頻道。"
+    },
+    {
+     "text": "no-gray-wall: 無連續超過 8 行的純散文段",
+     "passed": true,
+     "evidence": "以「非空、非列表、非標題、非表格、非代碼圍欄」為純散文行的判定跑腳本，全文最長連續純散文行數為 1 行（第 3 行），遠低於 8 行門檻。"
+    },
+    {
+     "text": "deadlines-prominent: 兩個日期以加粗/標題/表格突出",
+     "passed": true,
+     "evidence": "行 8『**2026-07-13（下週一）**』『**2026-07-20**』皆加粗；『時間表』(行 23-28) 與『這次改了什麼』表格 (行 32-36) 再次以列表/標題重複呈現。"
+    },
+    {
+     "text": "traditional-chinese: 全文無簡體字",
+     "passed": true,
+     "evidence": "以簡體字符集（们/说/读/写/后/务/见/复/关/万/与/开/发/环/贝/纪/线/换）逐字掃描，全文無命中。"
+    }
+   ],
+   "notes": []
+  },
+  {
+   "eval_id": 0,
+   "eval_name": "ci-upgrade-notes",
+   "configuration": "without_skill",
+   "run_number": 1,
+   "result": {
+    "pass_rate": 0.714,
+    "passed": 5,
+    "failed": 2,
+    "total": 7,
+    "time_seconds": 0,
+    "tokens": 0,
+    "tool_calls": 0,
+    "errors": 0
+   },
+   "expectations": [
+    {
+     "text": "tldr-first-screen: 開頭 15 行內有 TL;DR/一分鐘版本，含生效日期與讀者要做的事",
+     "passed": false,
+     "evidence": "全文（行 1-39）搜尋不到任何『TL;DR』或『一分鐘版本』標籤/區塊。前 15 行（行 1-15）直接以『## 這次改什麼』開場敘述生效日期，第 13 行雖有『我需要做什麼（三步遷移）』標題，但其下實際三步內容在行 17-19，超出前 15 行範圍，且沒有將『生效日期＋讀者要做的事』收攏成單一速覽區塊。"
+    },
+    {
+     "text": "terms-explained: GitHub Actions/workflow/secrets 首現有解釋或術語表",
+     "passed": false,
+     "evidence": "全文無術語表。『GitHub Actions』首現於行 5，僅作為目標系統名稱帶過，未解釋是什麼；『workflow』首現於行 17『自己專案的 workflow 設定裡』，完全沒有解釋這個詞的意思；僅『Secrets』在行 21-23 透過『例如 API key、密碼、憑證等機密資訊』的舉例間接說明,三項中兩項（GitHub Actions、workflow）未被解釋。"
+    },
+    {
+     "text": "action-steps-structured: 遷移三步用有序列表，模板路徑用代碼格式",
+     "passed": true,
+     "evidence": "行 17-19 為 markdown 有序列表『1./2./3.』；行 17 模板路徑 `.github/workflows/template.yml` 使用反引號代碼格式。"
+    },
+    {
+     "text": "all-facts-present: 7/13 生效、7/20 關停、secrets 需手動重配、#ci-migration 全部出現",
+     "passed": true,
+     "evidence": "行 5 出現 2026-07-13 生效；行 7/39 出現 2026-07-20 關停；行 21-27 說明 secrets 不會自動搬需手動重配；行 31 出現 #ci-migration 頻道。"
+    },
+    {
+     "text": "no-gray-wall: 無連續超過 8 行的純散文段",
+     "passed": true,
+     "evidence": "以「非空、非列表、非標題、非表格、非代碼圍欄」為純散文行的判定跑腳本，全文最長連續純散文行數為 1 行（第 5 行），遠低於 8 行門檻。"
+    },
+    {
+     "text": "deadlines-prominent: 兩個日期以加粗/標題/表格突出",
+     "passed": true,
+     "evidence": "行 5『**2026-07-13（下週一）**』、行 7『**2026-07-20 正式關停**』皆加粗；『時間軸總覽』表格（行 33-39）再次以表格呈現兩個日期。"
+    },
+    {
+     "text": "traditional-chinese: 全文無簡體字",
+     "passed": true,
+     "evidence": "以簡體字符集（们/说/读/写/后/务/见/复/关/万/与/开/发/环/贝/纪/线/换）逐字掃描，全文無命中。"
+    }
+   ],
+   "notes": []
+  },
+  {
+   "eval_id": 1,
+   "eval_name": "fix-messy-relay-doc",
+   "configuration": "with_skill",
+   "run_number": 1,
+   "result": {
+    "pass_rate": 0.857,
+    "passed": 6,
+    "failed": 1,
+    "total": 7,
+    "time_seconds": 0,
+    "tokens": 0,
+    "tool_calls": 0,
+    "errors": 0
+   },
+   "expectations": [
+    {
+     "text": "facts-preserved: key 格式/TTL 900/灰度節奏/vault 路徑/timeout 值與 120s cap/rgw2_ 前綴/15% 內存/雙寫語義全部保留未改",
+     "passed": true,
+     "evidence": "逐項對照 fixtures-messy-doc.md：key 格式 rg:aff:{cid}→rg2:aff:{cid}:{bucket}（行 36-38）；TTL 300→900（行 38）；灰度節奏 5%/50%(下週三)/100%(下下週一)（行 56-62）；vault 路徑 secret/relay/v2/client（行 42-43）；timeout 2s/30s、v1 為 5s/60s、上限 120s（行 45-48）；rgw2_ 前綴（行 49-51）；記憶體 +15%（行 52-54）；雙寫語義（行 24、52-54）。全部與原文一致，無遺漏或竄改，且對『新 prewarm 腳本路徑原文未提供』誠實標注未杜撰（行 40-41）。"
+    },
+    {
+     "text": "background-added: 開頭新增 RelayGW 是什麼與誰受影響的鋪墊",
+     "passed": true,
+     "evidence": "TL;DR（行 3-10）開頭即定義『RelayGW（內部請求轉發閘道）正在把 v1 逐步換成 v2』並說明受影響條件『如果你的服務在灰度名單內...』，原文（fixture）完全沒有這類開場鋪墊。"
+    },
+    {
+     "text": "terms-handled: singleflight/affinity/mTLS 首現有解釋或術語表",
+     "passed": true,
+     "evidence": "行 12-24 術語表逐一定義 RelayGW、灰度切流、Affinity（行 18）、Bucket 分片、Singleflight 擊穿（行 20）、TTL、mTLS（行 22）、Vault、雙寫，三個目標術語全部涵蓋。"
+    },
+    {
+     "text": "structured: 多主題長散文被拆為小節/列表，且至少含一個表格",
+     "passed": true,
+     "evidence": "原文為 6 段連續散文，revised.md 拆為 8 個 H2 小節（TL;DR/術語表/背景/影響/排程/行動/FAQ），含 2 個表格（術語表行 12-24、灰度排程表行 58-62）與多處 checklist 列表（行 69-74）。"
+    },
+    {
+     "text": "audience-action: 有按讀者情況分流的『你要做什麼』內容（讀 redis 的/有 dashboard 的/一般調用方）",
+     "passed": false,
+     "evidence": "『你要做的事（Checklist）』（行 67-75）是單一扁平清單，項目本身有條件式描述（如『服務有直接讀 Redis 的 affinity key →』行 69、『更新自己的監控 dashboard』行 72），但全文搜尋不到任何『不在灰度名單/一般調用方不用做什麼』的收斂說明——對照 without_skill 版本明確寫出『其他情況只需要留意切流時程即可』，with_skill 版本缺少對『一般調用方（未受影響者）』這個讀者群體的明確交代，三組讀者情境未完整覆蓋。"
+    },
+    {
+     "text": "tone-fixed: 『別私聊我』『不要來問』類語氣被中性化",
+     "passed": true,
+     "evidence": "原文『別私聊我』『401 了不要來問為什麼』已消失；行 78-79 FAQ 改寫為中性問答『遇到 401 怎麼辦？先檢查 mTLS 憑證是否正確拉取』；行 83 聯絡窗口改寫為『透過 @relay-oncall 詢問,不要私訊個人』，語氣從個人抱怨轉為中性政策陳述。"
+    },
+    {
+     "text": "with-skill-extra: with_skill 側另有 diagnosis.md 且含 9 維打分",
+     "passed": true,
+     "evidence": "diagnosis.md 存在，且行 7-31 有『原文 9 維打分』表格（句子長度/段落密度/資訊層級/掃讀性/列表與表格/術語密度與解釋/過渡與連貫/冗餘與重複/版式與視覺錨點，共 9 維，總分 13/45），行 61-86 另有修訂後 9 維自評（42/45）。"
+    }
+   ],
+   "notes": []
+  },
+  {
+   "eval_id": 1,
+   "eval_name": "fix-messy-relay-doc",
+   "configuration": "without_skill",
+   "run_number": 1,
+   "result": {
+    "pass_rate": 0.833,
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "time_seconds": 0,
+    "tokens": 0,
+    "tool_calls": 0,
+    "errors": 0
+   },
+   "expectations": [
+    {
+     "text": "facts-preserved: key 格式/TTL 900/灰度節奏/vault 路徑/timeout 值與 120s cap/rgw2_ 前綴/15% 內存/雙寫語義全部保留未改",
+     "passed": true,
+     "evidence": "逐項對照 fixtures-messy-doc.md：key 格式與 TTL 300→900（表格行 15-16）；灰度節奏 5%/50%(下週三)/100%(下下週一)（表格行 32-36）；vault 路徑 secret/relay/v2/client（行 49、66）；timeout 2s/30s、v1 5s/60s、上限 120s（表格行 19-20、行 51、69）；rgw2_ 前綴（表格行 21、行 54）；記憶體 +15%（行 58）；雙寫語義（行 24、58）。全部與原文一致，未見竄改或遺漏。"
+    },
+    {
+     "text": "background-added: 開頭新增 RelayGW 是什麼與誰受影響的鋪墊",
+     "passed": true,
+     "evidence": "行 3 blockquote『適用對象：所有接入 RelayGW（relay 服務）的業務工程師...』與行 5-7『一句話總結：RelayGW 正在從 v1 灰度切換到 v2。如果你的服務...』在開頭即交代適用對象與受影響條件，原文完全沒有這類鋪墊；唯對『RelayGW 是什麼』僅以『relay 服務』帶過，說明深度略薄於 with_skill 版本的『內部請求轉發閘道』定義，但仍構成有效的開頭背景鋪墊。"
+    },
+    {
+     "text": "terms-handled: singleflight/affinity/mTLS 首現有解釋或術語表",
+     "passed": false,
+     "evidence": "全文無術語表。singleflight 有解釋（行 24『同一個 key 的多個請求會互相卡住（術語叫 singleflight 擊穿）』），但 affinity 全文 7 處出現（行 1/7/15/16/44/58）皆直接使用『affinity key』一詞，從未解釋這是什麼、為何存在；mTLS 全文 4 處出現（行 18/38/49/66）也只說『新的驗證方式』『不接受 Basic Auth』，從未解釋 mTLS（雙向 TLS）本身的含意。三項術語中兩項（affinity、mTLS）首現無解釋。"
+    },
+    {
+     "text": "structured: 多主題長散文被拆為小節/列表，且至少含一個表格",
+     "passed": true,
+     "evidence": "原文為 6 段連續散文，revised.md 拆為 5 個 H2 小節（改了什麼/灰度時程/你需要做的事/常見問題/有問題找誰），含 2 個表格（變更對照表行 13-22、灰度時程表行 32-36）與多層 checklist（3.1-3.4，行 44-59）。"
+    },
+    {
+     "text": "audience-action: 有按讀者情況分流的『你要做什麼』內容（讀 redis 的/有 dashboard 的/一般調用方）",
+     "passed": true,
+     "evidence": "行 44『### 3.1 如果你的服務會直接讀 Redis 裡的 affinity key』、行 48『### 3.2 如果你被切到 v2 endpoint』、行 53『### 3.3 如果你有自己維護監控 Dashboard』分別對應讀 redis 的／一般調用方／有 dashboard 的三種讀者情境；行 7 另明確交代『其他情況只需要留意切流時程即可』，完整覆蓋三組讀者。"
+    },
+    {
+     "text": "tone-fixed: 『別私聊我』『不要來問』類語氣被中性化",
+     "passed": true,
+     "evidence": "原文『別私聊我』『401 了不要來問為什麼』已消失；行 65-66 FAQ 改寫為中性問答『切到 v2 之後打 API 收到 401，怎麼辦？』；行 78『有任何問題請洽 @relay-oncall，不要私訊個人』語氣從個人抱怨轉為中性陳述。"
+    }
+   ],
+   "notes": []
+  },
+  {
+   "eval_id": 2,
+   "eval_name": "staging-deploy-onboarding",
+   "configuration": "with_skill",
+   "run_number": 1,
+   "result": {
+    "pass_rate": 0.833,
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "time_seconds": 0,
+    "tokens": 0,
+    "tool_calls": 0,
+    "errors": 0
+   },
+   "expectations": [
+    {
+     "text": "prereq-first: VPN 與 deployer 申請（含約半天審批）出現在步驟之前",
+     "passed": true,
+     "evidence": "『開始之前：兩個前置條件』（行 14-19）在『部署步驟』（行 21 起）之前，行 18 明確提到 deployer 角色申請『審批大約需要**半天**』，行 19 提到需連上 VPN。"
+    },
+    {
+     "text": "steps-with-checkpoints: 三步有序列表各帶命令代碼塊；驗證步含 healthy 與 healthz 200 核對點",
+     "passed": true,
+     "evidence": "行 25/33/41 以粗體『第 1/2/3 步』依序標示三步（非 markdown『1./2./3.』有序列表語法,而是粗體步驟標籤,但視覺上仍構成清楚的三步序列);第 1、2 步各帶 fenced code block（行 27-29、35-37）;第 3 步驗證含兩個核對點：行 45『dctl status <service>...應該顯示 healthy』與行 46『.../healthz...應該是 200』,兩者皆滿足。（注：嚴格『markdown 有序列表』語法未使用,以此為唯一瑕疵記錄，不影響功能性判定為通過。）"
+    },
+    {
+     "text": "pitfall-prominent: VPN timeout 坑顯著標出且說明『不報 VPN 錯誤』",
+     "passed": true,
+     "evidence": "獨立小節『## 常見坑』（行 60-64），整段以粗體開場『**`dctl login` 卡住不動、一直等到逾時，但畫面不會提示「VPN 沒連上」。**』（行 62），並在第 1 步登入指令旁（行 31）預先提示『如果指令卡住不動...先看本文最後的「常見坑」』形成交叉引用，顯著性充分。"
+    },
+    {
+     "text": "rollback-present: dctl rollback 出現",
+     "passed": true,
+     "evidence": "行 55 `dctl rollback <service>` 出現在『部署錯了怎麼辦：回滾』小節。"
+    },
+    {
+     "text": "short-enough: 正文 ≤60 行（任務要求別太長）",
+     "passed": false,
+     "evidence": "`wc -l` 全文共 73 行，超過 60 行門檻。若改以非空白行計算則為 46 行（會通過），但以標準 wc -l 全文行數計，與『短、明天就要』的任務要求（見 eval prompt）不符，判定未通過，並在此註記度量口徑的模糊性供覆核。"
+    },
+    {
+     "text": "traditional-chinese: 全文無簡體字",
+     "passed": true,
+     "evidence": "以簡體字符集（们/说/读/写/后/务/见/复/关/万/与/开/发/环/贝/纪/线/换）逐字掃描，全文無命中。"
+    }
+   ],
+   "notes": []
+  },
+  {
+   "eval_id": 2,
+   "eval_name": "staging-deploy-onboarding",
+   "configuration": "without_skill",
+   "run_number": 1,
+   "result": {
+    "pass_rate": 0.833,
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "time_seconds": 0,
+    "tokens": 0,
+    "tool_calls": 0,
+    "errors": 0
+   },
+   "expectations": [
+    {
+     "text": "prereq-first: VPN 與 deployer 申請（含約半天審批）出現在步驟之前",
+     "passed": true,
+     "evidence": "『## 前置準備』（行 5-8）在『## 部署步驟』（行 10 起）之前，行 7 提到『審批約需半天，請提早申請』，行 8 提到需連上公司 VPN。"
+    },
+    {
+     "text": "steps-with-checkpoints: 三步有序列表各帶命令代碼塊；驗證步含 healthy 與 healthz 200 核對點",
+     "passed": false,
+     "evidence": "『## 部署步驟』下的 markdown 有序列表只有 2 項（行 12『1. 登入』、行 16『2. 部署服務』），驗證步驟被放在獨立的『## 驗證部署成功』標題下（行 22 起），並未編號為列表第 3 項，因此『三步有序列表』的結構未完整成立（僅 2 步在有序列表內）。驗證內容本身的核對點是齊全的：行 24『dctl status <service>...healthy』、行 25『.../healthz...200』。"
+    },
+    {
+     "text": "pitfall-prominent: VPN timeout 坑顯著標出且說明『不報 VPN 錯誤』",
+     "passed": true,
+     "evidence": "獨立小節『## 常見坑』（行 36-38），以粗體標出『**未連 VPN 時執行 `dctl login` 會直接卡住直到 timeout**』並說明『畫面上不會顯示任何 VPN 相關的錯誤訊息』，符合『不報 VPN 錯誤』的描述。"
+    },
+    {
+     "text": "rollback-present: dctl rollback 出現",
+     "passed": true,
+     "evidence": "行 33 `dctl rollback <service>` 出現在『## 回滾』小節。"
+    },
+    {
+     "text": "short-enough: 正文 ≤60 行（任務要求別太長）",
+     "passed": true,
+     "evidence": "`wc -l` 全文共 38 行，遠低於 60 行門檻，符合任務『短、明天就要』的要求。"
+    },
+    {
+     "text": "traditional-chinese: 全文無簡體字",
+     "passed": true,
+     "evidence": "以簡體字符集（们/说/读/写/后/务/见/复/关/万/与/开/发/环/贝/纪/线/换）逐字掃描，全文無命中。"
+    }
+   ],
+   "notes": []
+  }
+ ],
+ "run_summary": {
+  "with_skill": {
+   "pass_rate": {
+    "mean": 0.897,
+    "stddev": 0.074,
+    "min": 0.833,
+    "max": 1.0
+   },
+   "time_seconds": {
+    "mean": 0,
+    "stddev": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "tokens": {
+    "mean": 0,
+    "stddev": 0.0,
+    "min": 0,
+    "max": 0
+   }
+  },
+  "without_skill": {
+   "pass_rate": {
+    "mean": 0.793,
+    "stddev": 0.056,
+    "min": 0.714,
+    "max": 0.833
+   },
+   "time_seconds": {
+    "mean": 0,
+    "stddev": 0.0,
+    "min": 0,
+    "max": 0
+   },
+   "tokens": {
+    "mean": 0,
+    "stddev": 0.0,
+    "min": 0,
+    "max": 0
+   }
+  },
+  "delta": {
+   "pass_rate": "+0.103",
+   "time_seconds": "n/a",
+   "tokens": "n/a"
+  }
+ },
+ "notes": [
+  "with_skill 18/20（90%）vs without_skill 15/19（79%），單次運行無方差數據",
+  "skill 的簽名動作全部兌現：TL;DR 第一屏、術語表、時間表——baseline 三案例均缺 TL;DR/術語處理",
+  "真發現①：eval-onboarding with_skill 73 行 > 60 行上限——skill 的結構配件（TL;DR+術語表+核對點）把『別太長』的短文檔撐大，輕量路徑對『簡短』的約束不夠硬",
+  "真發現②：eval-fix-messy with_skill 漏了 audience-action（按讀者分流的行動節）——修訂路徑步驟未把它列為檢查項",
+  "baseline（Sonnet 裸寫）並非稻草人：結構/加粗/步驟列表都有，skill 的增量在系統性（不漏）而非文筆",
+  "timing/tokens 未採集（mailbox 通知不含），故時間與 token 對比為 n/a"
+ ]
+}

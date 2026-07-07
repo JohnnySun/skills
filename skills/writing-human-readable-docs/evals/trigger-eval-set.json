@@ -1,0 +1,82 @@
+[
+ {
+  "query": "幫我寫個公告跟大家說我們下週要把 MySQL 從 5.7 升到 8.0，各團隊要自己驗一遍慢查詢",
+  "should_trigger": true
+ },
+ {
+  "query": "这份 onboarding 新人说看不懂，帮我改一下 docs/onboarding/deploy.md",
+  "should_trigger": true
+ },
+ {
+  "query": "把這次 sprint 的改動整理成 release notes 發給客戶",
+  "should_trigger": true
+ },
+ {
+  "query": "給 PM 和 QA 講清楚我們新的灰度發布機制，要一份他們看得懂的說明",
+  "should_trigger": true
+ },
+ {
+  "query": "readme 太亂了 整理下 讓新來的人能跑起來項目",
+  "should_trigger": true
+ },
+ {
+  "query": "寫一篇教程：從零把我們的 SDK 接進一個 React 專案",
+  "should_trigger": true
+ },
+ {
+  "query": "老板说我写的技术方案像天书，明天要给业务方宣讲，救一下",
+  "should_trigger": true
+ },
+ {
+  "query": "幫我把這份 API 文檔改得別人查起來方便點，現在找個欄位要翻半天",
+  "should_trigger": true
+ },
+ {
+  "query": "我們要在論壇發一篇遷移指南給外部開發者，內容我有了，幫我潤成好讀的",
+  "should_trigger": true
+ },
+ {
+  "query": "寫個升級須知貼在羣裡，就三件事：備份、跑腳本、驗證，但要寫得沒人會漏做",
+  "should_trigger": true
+ },
+ {
+  "query": "幫我寫這個模組的代碼註釋和 docstring",
+  "should_trigger": false
+ },
+ {
+  "query": "review 一下這個 PR 的 diff，重點看併發安全",
+  "should_trigger": false
+ },
+ {
+  "query": "把這份需求整理成 technical design doc，按我們的模板來",
+  "should_trigger": false
+ },
+ {
+  "query": "寫個 commit message，改動是修了登入超時的 bug",
+  "should_trigger": false
+ },
+ {
+  "query": "幫我把會議記錄整理成 action items 清單",
+  "should_trigger": false
+ },
+ {
+  "query": "生成這個 Go package 的 godoc 風格 API 註釋",
+  "should_trigger": false
+ },
+ {
+  "query": "寫一條 Discord 公告，就一句話：今晚 10 點維護半小時",
+  "should_trigger": false
+ },
+ {
+  "query": "幫我給這個 skill 的 SKILL.md 加一段觸發條件說明",
+  "should_trigger": false
+ },
+ {
+  "query": "把這篇英文博客翻譯成中文",
+  "should_trigger": false
+ },
+ {
+  "query": "幫我寫季度 OKR 的自評總結",
+  "should_trigger": false
+ }
+]
