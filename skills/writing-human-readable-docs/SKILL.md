@@ -58,8 +58,10 @@ description: Write or revise a human-readable technical doc (briefing, upgrade n
 
 一坨灰壓壓的連續散文會讓讀者 3 秒內放棄。三條硬規則：**每屏至少一個
 視覺錨點**（標題/列表/表格/程式碼塊/加粗，連續 8 行純散文即灰牆）、
-**資訊形態決定 Markdown 元素**（並列→列表、對比→表格、步驟→有序列表、
-命令→程式碼塊，選型表見 references）、**加粗是稀缺資源**（每段 ≤2 處）。
+**資訊形態決定載體**（並列→列表、對比→表格、步驟→有序列表、命令→
+程式碼塊；流程/時序/狀態機→Mermaid——散文 ≥3 個轉折或多方來回就是該
+上圖的信號，完整視覺工具箱見 `references/diagrams-and-tables.md`）、
+**加粗是稀缺資源**（每段 ≤2 處）。
 講解採**漸進式**：金字塔（結論先行）+ 先具象後抽象（例子先於定義）+
 一屏新概念 ≤3 個。完整規範見 `references/markdown-typography.md`。
 
@@ -77,6 +79,15 @@ description: Write or revise a human-readable technical doc (briefing, upgrade n
 ### 8. 數字用模糊量
 
 易漂移的小數字（測試數、行數、cell 數）用「200+」「manifest 矩陣」這種模糊量，不寫死「274」「28-cell」——過兩天加一個就過時。穩定的數字（40 個 skills、8 個 submodule）可精確。
+
+## 理解設計（排版之上的一層）
+
+排版管「看上去清晰」，理解設計管「看完真的懂」。五個關鍵：**按讀者任務
+組織**（標題是讀者的問題，不是系統零件名；教程/操作/參考/解釋四型不混）、
+**心智模型先行**（先給粗糙但方向正確的類比，並聲明類比失效點）、
+**前向引用最小化**（概念介紹順序＝依賴順序）、**負知識**（預判讀者的
+錯誤預期並主動拆除）、**檢索友好**（目錄即摘要；FAQ 用讀者原話）。
+完整論述與自查五問見 `references/comprehension-design.md`。
 
 ## 可讀性 9 維度自檢
 
@@ -99,9 +110,13 @@ description: Write or revise a human-readable technical doc (briefing, upgrade n
 
 1. **摸清要講什麼**——讀 diff / 問使用者，確認核心內容。
 2. **列大綱 + 屏分佈規劃**——按骨架模板列節（每節一句話要點），同時預估
-   每節幾屏、每屏的視覺錨點是什麼（`references/markdown-typography.md` §3）。
+   每節幾屏、每屏的視覺錨點是什麼（`references/markdown-typography.md` §3）；
+   逐節過圖表觸發判據，把「該上圖的位置＋圖表類型」標進大綱
+   （`references/diagrams-and-tables.md` §1）。
 3. **寫初稿**——按核心原則寫，術語表前置。
-4. **自檢去重**——同一斷言只在最合適處詳述，其他交叉引用。
+4. **自檢去重 + 理解設計五問**——同一斷言只在最合適處詳述，其他交叉
+   引用；過 `references/comprehension-design.md` 的自查五問（目錄即摘要/
+   無前向引用/負知識/文檔類型不混/30 秒可檢索）。
 5. **可讀性 9 維度自檢**——逐項打分，<4 的維度改。注意：**自評分數普遍
    虛高一檔**（作者 agent 給自己打 4-5 是常態），自檢只用來抓明顯問題，
    分數以第 7 步獨立複評為準。
@@ -125,6 +140,8 @@ description: Write or revise a human-readable technical doc (briefing, upgrade n
 - **不要寫死易漂移數字**——用 200+
 - **不要對講者旁白**——文件是給讀者看的，不是描述宣講會議
 - **不要灰牆**——連續 8 行以上純散文必須重排；每屏要有視覺錨點
+- **不要用散文硬扛流程/時序/狀態機**——那是圖的地盤；也不要畫 20 節點
+  的義大利麵圖（一圖一主題、節點 ≤12、圖的結論正文要有粗版）
 
 ## 骨架模板（列大綱時的預設起點）
 
