@@ -1,0 +1,96 @@
+{
+  "expectations": [
+    {
+      "text": "派工 prompt 是過程式風格：包含編號步驟清單，而非三句話意圖式派工",
+      "passed": true,
+      "evidence": "answer.md 派工 prompt 段落有明確編號「步驟：\n1. 先寫一支轉換腳本...\n2. 跑這支腳本，實際套用到 docs/ 目錄下所有檔案。\n3. 跑完後，用下面這個驗證命令確認結果...\n4. 不要修改 docs/ 目錄以外的任何檔案...」，且步驟 1 內還有 a-g 七個子步驟（列出檔案→判斷 frontmatter→解析 tags→檢查 updated→保留其餘欄位→不動正文）。整份 prompt 完全是過程式步驟清單，不是三句話意圖式派工。"
+    },
+    {
+      "text": "包含至少一個具體的 frontmatter 輸入→輸出範例（before/after）",
+      "passed": true,
+      "evidence": "派工 prompt 內「現有 frontmatter 範例」給出 `title: 範例標題 / tags: 前端, 效能, uni-app`，緊接著「目標 frontmatter 範例（這是唯一正確的輸出格式，逐字對照，不要自創格式）」給出 `tags: [前端, 效能, uni-app] / updated: 2026-07-08`。這是明確的 before/after 對照範例。"
+    },
+    {
+      "text": "前置分支判斷：對可預見異常（缺 frontmatter、tags 已是陣列、格式不符）給出明確處置指示，而非『自行判斷』",
+      "passed": true,
+      "evidence": "步驟 1c「若沒有 frontmatter（開頭不是 ---，或找不到結尾 ---）：跳過該檔案，不修改，記錄到「跳過清單」」處理缺 frontmatter／格式不符；1d 第一個子項「若 tags 已經是陣列格式...保留原樣不動，但仍需檢查/新增 updated 欄位」處理 tags 已是陣列；同段落還前置了「無 tags 欄位」與「已有 updated 欄位，不覆蓋」兩種分支。四種可預見異常都給了具體處置動作，而非留給執行者『自行判斷』。"
+    },
+    {
+      "text": "有明確範圍限制與停止條件（只改 frontmatter 不動正文、只處理 docs/ 下的 md 檔）",
+      "passed": true,
+      "evidence": "步驟 1g「frontmatter 以外的正文內容一個字元都不要動」、步驟 4「不要修改 docs/ 目錄以外的任何檔案；不要修改 frontmatter 以外的正文；不要順手修正你發現的其他問題」，以及獨立的「停止條件：docs/ 目錄下所有 .md 檔案都檢查過一輪（無論是否需要修改）即視為完成，不要重複跑、不要擴大到 docs/ 以外目錄」。範圍限制與停止條件都明確寫出。"
+    },
+    {
+      "text": "有輸出契約：要求執行者回報處理數/跳過清單/驗證證據",
+      "passed": true,
+      "evidence": "派工 prompt 末段「你的最終訊息是本次任務唯一的交付物」下列出強制回報項：改動檔案清單、跳過清單、「tags 已是陣列，僅補 updated」清單、「無 tags 欄位」清單、「已有 updated，未覆蓋」清單、「無 git 歷史，用預設日期」清單、驗證結果（含步驟 3 驗證命令原文輸出 + 3 個檔案 frontmatter 原文）、驗收標準逐條自查（4 條過/不過）、未解決事項。涵蓋處理數（清單）、跳過清單與驗證證據三者。"
+    },
+    {
+      "text": "驗證外置：包含或建議程式化驗證手段（腳本/schema 檢查），不單靠便宜模型自查",
+      "passed": true,
+      "evidence": "步驟 3 要求執行者實際跑 `grep -L \"^updated:\" docs/**/*.md 2>/dev/null || echo \"全部檔案皆有 updated 欄位\"` 並貼出實際輸出，加上「至少挑 3 個被改過的檔案，貼出它們的 frontmatter 區塊原文」佐證。這是可獨立重跑核對的程式化命令，不是要求便宜模型口頭自我保證。"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {},
+    "total_tool_calls": null,
+    "total_steps": null,
+    "errors_encountered": null,
+    "output_chars": 9641,
+    "transcript_chars": 0,
+    "note": "無 transcript 檔與 metrics.json，僅能依 outputs/answer.md 評分；tool_calls/steps/errors 無法從現有素材取得，故留空。"
+  },
+  "timing": {
+    "executor_duration_seconds": 178.2,
+    "grader_duration_seconds": null,
+    "total_duration_seconds": 178.2,
+    "total_tokens": 40295
+  },
+  "claims": [
+    {
+      "claim": "updated 欄位的值應來自該檔案最後一次 git commit 日期（git log -1 --format=%ad --date=short），而非模型自行判斷的系統當前日期",
+      "type": "process",
+      "verified": true,
+      "evidence": "派工 prompt 明確寫出該指令並要求『不要用系統當前日期，不要自己猜測日期』，理由段落也解釋了兩者語義不同、可驗證性差異，前後一致。"
+    },
+    {
+      "claim": "40 個檔案應以寫一次轉換腳本、跑一次的方式處理，而非逐檔手動編輯",
+      "type": "process",
+      "verified": true,
+      "evidence": "答案明確指出『判斷用寫轉換腳本，不用逐檔手改』並在派工 prompt 步驟 1 開頭要求『先寫一支轉換腳本...不要逐檔手動編輯』，理由是格式漂移機率隨檔案數線性上升。"
+    },
+    {
+      "claim": "步驟 3 的驗證命令 `grep -L \"^updated:\" docs/**/*.md` 能正確涵蓋 docs/ 下所有巢狀子目錄的 md 檔案",
+      "type": "quality",
+      "verified": false,
+      "evidence": "在預設 bash（未 `shopt -s globstar`）或多數 POSIX shell 下，`**` 不會遞迴展開子目錄，實際只會匹配 `docs/` 一層或被 shell 當成一般 `*` 處理，導致巢狀目錄下的檔案可能漏檢；而步驟 1a 明確要求『含子目錄，遞迴』列出檔案，兩處對『是否遞迴』的處理不一致，是驗證手段本身的潛在缺陷。"
+    },
+    {
+      "claim": "答案在正文中明確標示這是 3 個未經確認的假設，並要求使用者在派工前先確認",
+      "type": "quality",
+      "verified": true,
+      "evidence": "『我替你做了 3 個假設（若不符請先改 prompt 裡對應段落再派工）』一節逐條列出 schema 長相、updated 值來源、腳本 vs 手改三個假設，結尾再次提醒『不要讓便宜模型自己去猜這幾個決定點』。這是恰當的不確定性揭露，而非虛報已完成。"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": [],
+    "note": "outputs_dir 無 user_notes.md，此區塊為空。"
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "驗證外置：包含或建議程式化驗證手段（腳本/schema 檢查），不單靠便宜模型自查",
+        "reason": "此斷言只檢查『是否包含程式化驗證命令』，不檢查該命令是否真的正確。本次輸出的 grep 命令用了 `docs/**/*.md`，在預設 bash 下不會遞迴匹配巢狀子目錄，跟步驟 1a 要求的『遞迴列出所有 .md 檔』矛盾——這種『驗證命令看起來像程式化驗證、實際涵蓋範圍不足』的輸出會被現有斷言判為 PASS。建議加一條斷言檢查驗證命令的萬用字元/遞迴語法是否與『含子目錄』的範圍要求一致，或要求驗證命令附帶 `find` 等明確遞迴工具。"
+      }
+    ],
+    "overall": "6 條斷言都在檢查『派工 prompt 是否具備某個結構性元素』（步驟清單、範例、分支前置、範圍/停止條件、輸出契約、驗證手段的存在），對本次輸出是有效的區分——一份偷懶的三句話派工 prompt 不可能同時滿足全部 6 條。但斷言普遍只驗證『有沒有』不驗證『對不對』，這次抓到的 grep 遞迴語法瑕疵就是一個具體例子，值得補一條『驗證手段本身是否可執行、範圍是否對得上』的斷言。"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "expectations": [
+    {"text": "診斷出『一份提示服務所有模型』的根因，方案是分層（骨架共用+按層增減），而非再調一份單一折衷 prompt", "passed": true, "evidence": "「建議停止共用單一 prompt，改成『共用核心 + 按模型分層的附加段』」；並解釋兩頭不討好的根因。"},
+    {"text": "經濟層處方：格式契約/範例/結構化輸出（針對格式跑飛）", "passed": true, "evidence": "便宜模型附加段給出嚴格格式規則 + 輸入→輸出範例；並建議 vLLM/TGI guided decoding / JSON schema「比任何 prompt 措辭都可靠」。"},
+    {"text": "旗艦層處方：刪規範性腳手架+正面簡潔範例（針對囉嗦），而非堆負面禁令", "passed": true, "evidence": "「旗艦不需要格式範例堆疊，給它一個『好的樣子』+ 明確長度上限就夠」；附加段含正面範例（好的範例：<一句示範>）與長度要求，非負面禁令堆疊。"},
+    {"text": "提到參數旋鈕（effort/reasoning/verbosity/結構化輸出 API）作為提示之外的調節手段", "passed": true, "evidence": "兩處：guided decoding/JSON schema（結構化輸出 API）；「也可以看 API 是否有輸出長度/詳盡度參數可以調，比在 prompt 裡反覆強調更穩定」。"},
+    {"text": "建議每層配回歸驗證或 eval，量測後再上線", "passed": true, "evidence": "「每個檔位準備 5-10 個固定測試輸入，改 prompt 前後各跑一遍對比（格式合規率、平均長度），不要憑感覺上線」+ 兩個線上監控指標。"}
+  ],
+  "summary": {"passed": 5, "failed": 0, "total": 5, "pass_rate": 1.0},
+  "timing": {"total_tokens": 16920, "duration_ms": 74331, "total_duration_seconds": 74.3},
+  "eval_feedback": {"suggestions": [{"reason": "本 eval 的五條斷言 clean baseline 全過——對主力層模型而言此題太容易，區分度不足；建議 iteration-2 把任務加難（如要求處理『不能拆 prompt、只能共用一份』的約束場景，或加入未知新模型的歸層決策），或把斷言升級為檢查方案完整度（配置化、灰度、回退）。"}], "overall": "斷言全部有真實證據，但此題對無 skill 的強模型缺乏鑑別力。"}
+}

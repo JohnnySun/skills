@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "uptier-review-migration",
+  "prompt": "這是我們兩年前為舊模型寫的 code review system prompt，現在要遷到新一代旗艦模型。內容如下：「You are a code reviewer. Think step by step and show your reasoning first. For each file: Step 1: read the diff. Step 2: list potential issues. Step 3: rank them. Only report high-severity issues, be conservative, don't be nitpicky. After every 3 files, summarize your progress so far. NEVER miss a security issue. NEVER report style issues. ALWAYS be thorough.」幫我改。",
+  "assertions": [
+    "移除『show your reasoning first』推理復述指令（識別其在新旗艦上的 refusal/品質風險）",
+    "處理召回率殺手：『only report high-severity / be conservative』改為覆蓋率+下游過濾，或改為操作性標準（可導致錯誤行為的都報，只略過純風格）",
+    "移除強制進度節拍（after every 3 files summarize）",
+    "移除或實質改寫 CoT 步驟腳手架（Step 1/2/3 清單）",
+    "NEVER/ALWAYS 堆疊被改寫為帶理由的指引或操作性標準，不是原樣保留",
+    "建議對改動做驗證（真實案例 A/B 或 eval，關注召回率/精確率），不是只交付文本"
+  ]
+}

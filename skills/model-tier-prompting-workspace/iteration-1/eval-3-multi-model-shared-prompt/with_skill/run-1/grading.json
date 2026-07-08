@@ -1,0 +1,81 @@
+{
+  "expectations": [
+    {
+      "text": "診斷出『一份提示服務所有模型』的根因，方案是分層（骨架共用+按層增減），而非再調一份單一折衷 prompt",
+      "passed": true,
+      "evidence": "answer.md 開頭明確點出根因：『三檔模型缺的東西不一樣，你只給了一份文本』，並具體展開便宜模型缺過程/格式、旗艦模型缺意圖/邊界/停止條件；明確排除微調用詞：『這不是靠微調用詞能解決的，要換架構』。方案章節『解法：骨架共用、厚度分層』寫明『不要維護三份互相獨立的 prompt...也不要硬撐一份萬用文本』，改為『共用骨架』+『分層厚度』兩層結構，並給出模板+變數的工程實作建議。"
+    },
+    {
+      "text": "經濟層處方：格式契約/範例/結構化輸出（針對格式跑飛）",
+      "passed": true,
+      "evidence": "『經濟檔位追加』區塊給出完整步驟清單、JSON 欄位順序契約、兩個 few-shot 範例（含邊界情況範例），並在要點段落建議『格式驗證交給結構化輸出而不是提示文字』，具體提到 function calling / JSON schema / vLLM guided decoding 作為比提示文字更可靠的格式強制手段，直接對應『格式跑飛』症狀。"
+    },
+    {
+      "text": "旗艦層處方：刪規範性腳手架+正面簡潔範例（針對囉嗦），而非堆負面禁令",
+      "passed": true,
+      "evidence": "『頂級旗艦檔位追加』區塊明確寫『這裡刻意不寫步驟清單、不寫「先讀一遍再整理」這類過程指導，也不用「不要囉嗦」這種負面指令（definitionally 不可操作），改用一個正面範例讓模型自己校準』，並提供具體『長度剛好』的範例供校準，同時自我標註『回應 anti-pattern「只寫負面指令」與「CoT 腳手架塞給強模型」』，與 assertion 描述逐字對應。"
+    },
+    {
+      "text": "提到參數旋鈕（effort/reasoning/verbosity/結構化輸出 API）作為提示之外的調節手段",
+      "passed": true,
+      "evidence": "經濟檔位段落提到『如果這個開源模型的部署方式支援 function calling / JSON schema 約束輸出（例如 vLLM 的 guided decoding、或模型本身支援 tool use 格式），優先用這個機制鎖死欄位結構,不要只靠提示文字描述格式——提示文字對這層模型是「建議」,結構化輸出約束才是「強制」』，明確把結構化輸出 API 定位為『提示之外』的調節手段，屬於 assertion 列舉選項之一。但注意：全文完全沒有提到 effort/reasoning_effort/verbosity 這類推理力度或輸出詳略的 API 參數旋鈕——恰好旗艦『囉嗦』這個症狀本身就是最適合用 verbosity/reasoning effort 參數處理的場景，卻只在提示文字層面處理，未提及對應參數旋鈕。因為 assertion 用『/』列舉多個選項，命中其中一項（結構化輸出 API）即符合字面判準，故仍判 PASS，但此為擦邊判定，見 eval_feedback。"
+    },
+    {
+      "text": "建議每層配回歸驗證或 eval，量測後再上線",
+      "passed": true,
+      "evidence": "『驗證方式（別跳過這步）』章節寫明『三檔各自要有一組真實案例（至少 3-5 組，涵蓋長文/短文/多子主題/單一主題這幾種輸入形態）』，並分別給出經濟檔（parse 成功率、欄位齊全度，量化 pass/fail）與旗艦檔（前後長度/密度對比、盲評）的驗證方法，最後補一句『若這個摘要功能本身有線上留存的 eval 集或人工評分流程,拿這三版分層提示各跑一次那個既有 eval,不要只憑這次的臨時案例下結論』，滿足『量測後再上線』的要求。"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 3882,
+    "transcript_chars": 0,
+    "note": "無 transcript 檔與 metrics.json，僅依 outputs/answer.md 評分（依派工指示）"
+  },
+  "timing": {
+    "executor_duration_seconds": 169.0,
+    "total_tokens": 38547
+  },
+  "claims": [
+    {
+      "claim": "共用骨架 + 分層 addendum 應實作為『模板 + 依 model_tier 參數選擇的 addendum 拼接』而非三份完全獨立字串常數",
+      "type": "process",
+      "verified": true,
+      "evidence": "answer.md 明確給出此工程建議，且與其診斷（共用骨架改一次三檔同步）邏輯自洽，是可驗證、可操作的具體建議，非空泛口號。"
+    },
+    {
+      "claim": "旗艦模型的囉嗦源自負面指令與過程腳手架，而非模型本身能力問題",
+      "type": "quality",
+      "verified": true,
+      "evidence": "此為模型層行為的合理歸因（業界常見反模式：對強模型堆疊步驟腳手架會導致其忠實逐步展開、變長），且輸出給出可操作的反例處方（正面範例+刪腳手架），判斷有理有據，非空談。"
+    },
+    {
+      "claim": "經濟層模型的自我格式驗證不可靠，應在程式碼層外置驗證並重試",
+      "type": "quality",
+      "verified": true,
+      "evidence": "『驗證外置,不要信任這層模型自我檢查』段落具體給出重試機制設計（把錯誤訊息如『缺少 key_points 欄位』附進下一輪提示），是可驗證的具體工程手段，而非只喊口號。"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "提到參數旋鈕（effort/reasoning/verbosity/結構化輸出 API）作為提示之外的調節手段",
+        "reason": "此 assertion 用『/』列舉四個選項，只要命中其中之一（本例命中『結構化輸出 API』）即可判 PASS，但這四個選項的針對性並不對等：effort/reasoning/verbosity 這類參數旋鈕對本題『旗艦囉嗦』症狀才是最貼題的解法（用 verbosity 或 reasoning_effort 參數直接調節輸出詳略度，比純提示文字更可靠），而『結構化輸出 API』其實只對應『經濟層格式跑飛』症狀，跟 assertion 3（旗艦囉嗦處方）沒有交集。建議把這條拆成兩條分開判：一條專門檢查『是否針對囉嗦症狀提到 verbosity/reasoning_effort 類參數』，一條檢查『是否針對格式跑飛提到結構化輸出 API』——目前的合併寫法讓輸出只答對格式面就能矇混過關,完全沒提到 verbosity/effort 參數也能整條 PASS,削弱了這條 assertion 的鑑別力。"
+      },
+      {
+        "reason": "沒有任何 assertion 檢查『三層方案是否對主力檔（workhorse tier）也給出對應處方』。本題只列了經濟層與旗艦層兩個 assertion，但輸出其實也給了主力檔位追加（範圍要求+風格範例），這部分內容完全落在 assertion 覆蓋範圍之外——如果換一個較弱的作答者，只顧經濟層與旗艦層、完全漏答或亂答主力層，目前的 assertion 集合也不會抓到,是一個評分盲區。"
+      }
+    ],
+    "overall": "5 條 assertion 全數有明確、具體證據支持,答案本身在根因診斷、分層處方、驗證方法上都給出可操作、貼題的具體內容,沒有發現『技術上滿足字面但實質空洞』的情況。但 assertion 4 的『/' 列舉寫法讓一個對本題更貼題的選項（verbosity/reasoning effort 參數，對應旗艦囉嗦症狀）完全沒被提及也能靠另一個較不貼題的選項（結構化輸出 API，對應經濟層格式問題）矇混過關,建議拆分後重新評分；另外主力檔位缺乏對應 assertion 覆蓋,屬於評分盲區而非本次作答問題。"
+  }
+}

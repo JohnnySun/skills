@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "downtier-batch-dispatch",
+  "prompt": "我要派一個子代理去把 docs/ 目錄下 40 個 markdown 檔的 frontmatter 統一成新 schema（加 updated 欄位、把 tags 從逗號字串改成陣列）。為了省錢我想用最便宜的模型跑。幫我把派工 prompt 寫好。",
+  "assertions": [
+    "派工 prompt 是過程式風格：包含編號步驟清單，而非三句話意圖式派工",
+    "包含至少一個具體的 frontmatter 輸入→輸出範例（before/after）",
+    "前置分支判斷：對可預見異常（缺 frontmatter、tags 已是陣列、格式不符）給出明確處置指示，而非『自行判斷』",
+    "有明確範圍限制與停止條件（只改 frontmatter 不動正文、只處理 docs/ 下的 md 檔）",
+    "有輸出契約：要求執行者回報處理數/跳過清單/驗證證據",
+    "驗證外置：包含或建議程式化驗證手段（腳本/schema 檢查），不單靠便宜模型自查"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "expectations": [
+    {"text": "派工 prompt 是過程式風格：包含編號步驟清單，而非三句話意圖式派工", "passed": false, "evidence": "prompt 主體是「要做的兩件事」+「規則」列表，屬規則式而非過程式；沒有「第一步做什麼、第二步做什麼」的編號執行步驟清單。規則列表描述的是約束（只修改 frontmatter 區塊/已是陣列不要動/沒有 frontmatter 跳過），不是執行流程。"},
+    {"text": "包含至少一個具體的 frontmatter 輸入→輸出範例（before/after）", "passed": false, "evidence": "只有行內的格式示意（如 tags: a, b, c → tags: [a, b, c] 內嵌在指令句中），沒有一組完整的 frontmatter before/after 區塊範例。"},
+    {"text": "前置分支判斷：對可預見異常（缺 frontmatter、tags 已是陣列、格式不符）給出明確處置指示，而非『自行判斷』", "passed": true, "evidence": "「tags 已經是陣列格式的檔案不要動」「沒有 frontmatter 的檔案跳過」兩種分支有明確處置；但『格式無法判斷』類異常未覆蓋——按嚴格標準此條勉強過（兩個主要分支有覆蓋）。"},
+    {"text": "有明確範圍限制與停止條件（只改 frontmatter 不動正文、只處理 docs/ 下的 md 檔）", "passed": true, "evidence": "「只修改 --- 與 --- 之間的 frontmatter 區塊，正文一律不動」「docs/ 下所有 .md 檔案都被檢查過」均有明文。"},
+    {"text": "有輸出契約：要求執行者回報處理數/跳過清單/驗證證據", "passed": false, "evidence": "有「輸出一份清單：每個檔案一行，標明已改/跳過」——有清單但無處理數統計、無驗證證據要求（不要求貼任何命令輸出）。按嚴格標準，三項要求只滿足一項，FAIL。"},
+    {"text": "驗證外置：包含或建議程式化驗證手段（腳本/schema 檢查），不單靠便宜模型自查", "passed": true, "evidence": "「先拿 2-3 個檔案試跑」「用一個 python 腳本 + PyYAML 更省」「先 git commit 一次當還原點」——建議了外部驗證與更穩妥的程式化替代方案。"}
+  ],
+  "summary": {"passed": 3, "failed": 3, "total": 6, "pass_rate": 0.5},
+  "timing": {"total_tokens": 18354, "duration_ms": 76542, "total_duration_seconds": 76.5},
+  "eval_feedback": {"suggestions": [{"reason": "斷言3對『覆蓋幾種異常才算過』無明確門檻，本次兩種過、一種缺，判 PASS 有裁量空間；建議寫明『至少覆蓋三類異常中的兩類』之類的硬門檻。"}], "overall": "斷言整體可客觀對照。"}
+}

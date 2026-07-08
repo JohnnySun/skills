@@ -1,0 +1,97 @@
+{
+  "expectations": [
+    {
+      "text": "移除『show your reasoning first』推理復述指令（識別其在新旗艦上的 refusal/品質風險）",
+      "passed": true,
+      "evidence": "診斷表明確列出該指令並標註反模式 #1，理由寫『要求復述內部推理，在頂級模型上有觸發 refusal 的風險，其餘情況純浪費 token』。改寫後的 system prompt 全文不含任何『show your reasoning first』或等效復述要求，『改動說明』第 1 點再次確認『復述推理的要求在部分頂級模型上是硬故障（refusal），完全不值得冒險保留』。"
+    },
+    {
+      "text": "處理召回率殺手：『only report high-severity / be conservative』改為覆蓋率+下游過濾，或改為操作性標準（可導致錯誤行為的都報，只略過純風格）",
+      "passed": true,
+      "evidence": "改寫後 prompt 明確寫『Report every issue you find, tagged with severity (critical / high / medium / low) and your confidence in it. Do not pre-filter to \"important only\"... severity and confidence tags are there so whoever reads the review can filter downstream. The one thing to leave out: pure style/formatting preferences that don't affect correctness or safety』，完全符合『覆蓋率+下游過濾』且把例外收斂到『只略過純風格，且風格若致風險仍要報』這個可操作邊界。『改動說明』第 2 點還額外指出這條在新模型上會被字面忠實執行、換代後召回率會被措辭本身砍掉，展示了對根因的理解而非表面替換字詞。"
+    },
+    {
+      "text": "移除強制進度節拍（after every 3 files summarize）",
+      "passed": true,
+      "evidence": "改寫後 system prompt 全文沒有任何『每 N 個檔案總結』的節拍指令。『改動說明』第 3 點明確處理此條：『砍掉「每 3 個檔案總結一次進度」……新旗艦模型的進度感知已經內建，強制節拍只會打斷它的工作流程』，並補充如果實務上需要進度可見性，改用描述期望更新內容而非規定頻率。"
+    },
+    {
+      "text": "移除或實質改寫 CoT 步驟腳手架（Step 1/2/3 清單）",
+      "passed": true,
+      "evidence": "舊提示的『Step 1: read the diff. Step 2: list potential issues. Step 3: rank them』在改寫後的完整 system prompt 中完全消失，換成不規定步驟、只規定『investigate as deeply as the change warrants』與『Anchor every finding to the actual diff』的結果導向描述。『改動說明』第 1 點解釋『砍掉 Step 1/2/3 腳手架……新模型自己分解任務通常比你寫死的三步更好』。"
+    },
+    {
+      "text": "NEVER/ALWAYS 堆疊被改寫為帶理由的指引或操作性標準，不是原樣保留",
+      "passed": true,
+      "evidence": "舊的『NEVER miss a security issue. NEVER report style issues. ALWAYS be thorough.』三連禁令在改寫後被拆解為兩段帶理由的具體指引：一段解釋『Security issues get extra scrutiny: a missed vulnerability is far more costly than a false positive』並列出具體檢查類別（injection、missing authorization checks、unsafe deserialization、secrets in code）；另一段用『The one thing to leave out: pure style/formatting preferences…』取代『NEVER report style issues』並加上例外條件。『改動說明』第 4 點逐條對照解釋了每一句改寫的理由。原文的 NEVER/ALWAYS 措辭本身沒有任何一句被原樣保留。"
+    },
+    {
+      "text": "建議對改動做驗證（真實案例 A/B 或 eval，關注召回率/精確率），不是只交付文本",
+      "passed": true,
+      "evidence": "『尚待驗證』段落明確建議：『找 3–5 個你們實際 review 過的 diff（最好包含至少一個已知會被舊 prompt 漏報的案例），新舊 prompt 各跑一次，比對召回率（抓到的真問題數）和精確率（誤報數），不要只看「感覺有沒有變囉唆」』，並進一步建議接入 CI/自動 review pipeline 時建立回歸集做量化。這不是泛泛的『建議測試一下』，而是具體到 A/B 對照、樣本數、指標（recall/precision）與長期回歸機制。"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "total": 6,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {},
+    "total_tool_calls": null,
+    "total_steps": null,
+    "errors_encountered": null,
+    "output_chars": 7306,
+    "transcript_chars": null,
+    "note": "沒有 transcript 檔與 metrics.json，僅能依 outputs/answer.md 內容評分；tool_calls/steps/errors 無法取得。"
+  },
+  "timing": {
+    "executor_duration_seconds": 195.9,
+    "total_tokens": 42120,
+    "total_duration_seconds": 195.9,
+    "grader_duration_seconds": null,
+    "source": "timing.json（無 grader_duration_seconds 欄位，原樣讀入 total_tokens/duration_ms/total_duration_seconds）"
+  },
+  "claims": [
+    {
+      "claim": "『Only report high-severity / be conservative』與『ALWAYS be thorough』在舊提示裡自相矛盾",
+      "type": "factual",
+      "verified": true,
+      "evidence": "檢視原始 prompt 原文：一句要求『be conservative, don't be nitpicky』（只報高嚴重度、保守），另一句要求『ALWAYS be thorough』（永遠徹底）——兩者對『該報多少』給出相反指示，claim 成立。"
+    },
+    {
+      "claim": "『show your reasoning first』在頂級模型上有觸發 refusal 的風險",
+      "type": "quality",
+      "verified": false,
+      "evidence": "這是模型層級遷移的領域經驗判斷（對應 model-tier-prompting 方法論的已知反模式），輸出裡沒有附上具體案例、citation 或可驗證來源，僅憑輸出本身無法核實其真偽，只能視為未經驗證但方向合理的專業判斷。"
+    },
+    {
+      "claim": "新旗艦模型的進度感知已經內建，不需要強制節拍",
+      "type": "quality",
+      "verified": false,
+      "evidence": "同樣是關於目標模型行為的斷言，outputs 中沒有提供任何來自實際跑分/案例的證據支持，僅為方法論性質的推斷，無法從本次輸出獨立核實。"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": [],
+    "note": "outputs 目錄下沒有 user_notes.md，此欄位為空。"
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "處理召回率殺手：『only report high-severity / be conservative』改為覆蓋率+下游過濾，或改為操作性標準",
+        "reason": "這條資產本身設計得好（給了兩種可接受的解法路徑），但『操作性標準』分支目前沒有明確定義『可導致錯誤行為』要怎麼界定，如果只是把『be conservative』換成另一個同樣模糊的形容詞（例如『be reasonable』）理論上字面也能宣稱滿足這條——本次輸出因為給了具體的『severity+confidence tag + downstream filter』機制而遠遠超過這個下限，但評分時要注意未來若有更弱的輸出（例如只是刪掉『conservative』但沒建立替代機制）評分者需要更嚴格把關，不能只看關鍵詞是否消失。"
+      },
+      {
+        "reason": "本次 eval 沒有 transcript、也沒有 metrics.json，只能對照最終文本評分，完全無法驗證『判定先答再動筆』『逐條診斷』是不是真的先於改寫發生，還是改寫完再回填診斷表——如果未來要區分『真的先分析再下筆』vs『先寫完再補理由』這種過程品質，需要保留 transcript 或至少要求輸出保留時間戳/思考順序痕跡，目前的 assertion 集合完全沒有觸及這一點。"
+      },
+      {
+        "reason": "六條 assertion 都聚焦在『舊指令怎麼被移除/改寫』，但沒有一條檢查改寫後的 system prompt 本身是否可用/自洽（例如：新 prompt 有沒有引入新的內部矛盾、有沒有過長、是否仍然可以被真實 CI pipeline 直接套用）。本次輸出質量高，沒有觀察到新增矛盾，但如果未來有輸出把六個舊問題都『技術性』改掉、卻把新 prompt 寫得又臭又長或自相矛盾，目前的 assertion 集合會全部 PASS 而放過這個真實缺陷。"
+      }
+    ],
+    "overall": "六條 assertion 都有清楚、具體的證據支撐（引用改寫後 prompt 原文 + 改動說明段落），不是靠關鍵詞比對就能矇混過關的弱資產——尤其第 2 條（覆蓋率+下游過濾）和第 6 條（驗證方式要具體到 A/B/recall/precision）門檻設得夠高。本次全部 6 條通過，且每條都能在輸出裡找到對應的具體機制而非空話，屬於高信度的 PASS，不是巧合達標。主要缺口在於：assertion 集合完全不檢查改寫結果本身的自洽性/可用性，也無法核實過程聲稱（因為沒有 transcript），這兩點建議未來迭代時補強。"
+  }
+}
