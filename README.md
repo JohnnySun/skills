@@ -13,6 +13,7 @@
 | `skills/plan-review/` | 對抗式方案/設計 review 收斂迴路（與 code-review 同構，作用於實作前） | 驗證端 |
 | `skills/workflow-design/` | Claude Code Workflow 腳本設計方法：任務分解、phase 劃分、控制流 primitive、schema、對抗式驗證與成本隔離檢查 | 設計端 |
 | `skills/writing-human-readable-docs/` | 面向零上下文讀者的技術文檔寫作方法：術語前置、去重、結構化、正式語氣與可讀性自檢 | 設計端 |
+| `skills/model-tier-prompting/` | 跨模型層級提示詞方法：三層速查（frontier/主力/經濟）、歸層探針、派工 prompt 模板、反模式清單、層級感知改寫協議 | 設計端 |
 | `skills/skill-creator/` | Skill 的創建與 eval 迭代工具（約束層文本自己的進化迴路） | 進化端 |
 | `skills/handoff/` | Session 知識傳承：六段固定格式 handoff 文件 + active/archive 生命週期 | 傳承端 |
 | `templates/harness-scaffold/` | 環1 最小施工件：hook router（自帶 12 案例可信集）+ ratchet + 佈線範例 + 帳本模板，五步接線 | 施工件 |
@@ -24,6 +25,7 @@
 3. **review 站點**：把 `code-review` / `plan-review` 接進工作流，其中的 Domain Skill Packs 表換成目標工程自己的 skill。
 4. **複雜批量任務**：先用 `workflow-design` 設計 `.workflow.js`，再落到具體 workflow 腳本。
 5. **技術文檔**：用 `writing-human-readable-docs` 把方案、公告、升級說明寫成零上下文讀者可懂的版本。
+6. **派工／提示詞**：寫子代理派工 prompt、遷移舊模型提示、診斷提示效果問題前，先過 `model-tier-prompting` 的層級判定與反模式清單。
 
 ## 使用方式
 
