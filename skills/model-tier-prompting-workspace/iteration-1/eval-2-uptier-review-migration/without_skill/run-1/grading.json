@@ -1,13 +1,74 @@
 {
   "expectations": [
-    {"text": "移除『show your reasoning first』推理復述指令（識別其在新旗艦上的 refusal/品質風險）", "passed": true, "evidence": "改寫版無任何推理復述要求；說明第 1 條「砍掉『Think step by step and show your reasoning first』…強制在輸出裡都要先秀一遍推理過程，對品質沒有邊際幫助」。（未提及 refusal 風險，但斷言主體是移除，判 PASS）"},
-    {"text": "處理召回率殺手：『only report high-severity / be conservative』改為覆蓋率+下游過濾，或改為操作性標準（可導致錯誤行為的都報，只略過純風格）", "passed": true, "evidence": "改寫版給出操作性 Severity rubric：security 類「Report every one you find regardless of how minor it looks…err toward reporting」；correctness 類有具體定義；「Do not report: style, formatting, naming」。屬斷言允許的第二分支（操作性標準）。"},
-    {"text": "移除強制進度節拍（after every 3 files summarize）", "passed": true, "evidence": "「you don't need to hit a fixed checkpoint cadence…it's a working note, not something to report」+ 說明第 4 條明確講移除理由。"},
-    {"text": "移除或實質改寫 CoT 步驟腳手架（Step 1/2/3 清單）", "passed": true, "evidence": "改寫版無 Step 1/2/3；說明第 2 條「把『Step 1/2/3』換成『目標敘述 + 嚴重度準則』」。"},
-    {"text": "NEVER/ALWAYS 堆疊被改寫為帶理由的指引或操作性標準，不是原樣保留", "passed": true, "evidence": "說明第 3 條處理了矛盾並給出不對稱通報規則；改寫版全文無 NEVER/ALWAYS 大寫堆疊。"},
-    {"text": "建議對改動做驗證（真實案例 A/B 或 eval，關注召回率/精確率），不是只交付文本", "passed": false, "evidence": "全文無任何「上線前用真實 diff 對比新舊 prompt」「量測召回率/精確率」類建議；結尾直接停在改動說明。唯一接近的是 prompt 內要求 reviewer 自己驗證發現（Evidence 欄位），但那是 review 行為要求，不是對 prompt 改動本身的驗證建議。"}
+    {
+      "text": "移除『show your reasoning first』推理復述指令（識別其在新旗艦上的 refusal/品質風險）",
+      "passed": true,
+      "evidence": "改寫版無任何推理復述要求；說明第 1 條「砍掉『Think step by step and show your reasoning first』…強制在輸出裡都要先秀一遍推理過程，對品質沒有邊際幫助」。（未提及 refusal 風險，但斷言主體是移除，判 PASS）"
+    },
+    {
+      "text": "處理召回率殺手：『only report high-severity / be conservative』改為覆蓋率+下游過濾，或改為操作性標準（可導致錯誤行為的都報，只略過純風格）",
+      "passed": true,
+      "evidence": "改寫版給出操作性 Severity rubric：security 類「Report every one you find regardless of how minor it looks…err toward reporting」；correctness 類有具體定義；「Do not report: style, formatting, naming」。屬斷言允許的第二分支（操作性標準）。"
+    },
+    {
+      "text": "移除強制進度節拍（after every 3 files summarize）",
+      "passed": true,
+      "evidence": "「you don't need to hit a fixed checkpoint cadence…it's a working note, not something to report」+ 說明第 4 條明確講移除理由。"
+    },
+    {
+      "text": "移除或實質改寫 CoT 步驟腳手架（Step 1/2/3 清單）",
+      "passed": true,
+      "evidence": "改寫版無 Step 1/2/3；說明第 2 條「把『Step 1/2/3』換成『目標敘述 + 嚴重度準則』」。"
+    },
+    {
+      "text": "NEVER/ALWAYS 堆疊被改寫為帶理由的指引或操作性標準，不是原樣保留",
+      "passed": true,
+      "evidence": "說明第 3 條處理了矛盾並給出不對稱通報規則；改寫版全文無 NEVER/ALWAYS 大寫堆疊。"
+    },
+    {
+      "text": "建議對改動做驗證（真實案例 A/B 或 eval，關注召回率/精確率），不是只交付文本",
+      "passed": false,
+      "evidence": "全文無任何「上線前用真實 diff 對比新舊 prompt」「量測召回率/精確率」類建議；結尾直接停在改動說明。唯一接近的是 prompt 內要求 reviewer 自己驗證發現（Evidence 欄位），但那是 review 行為要求，不是對 prompt 改動本身的驗證建議。"
+    }
   ],
-  "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.83},
-  "timing": {"total_tokens": 19876, "duration_ms": 88214, "total_duration_seconds": 88.2},
-  "eval_feedback": {"suggestions": [], "overall": "斷言區分度良好，本次 FAIL 的驗證條正是 skill 蒸餾的『改動要量測』信條，能有效區分有無 skill。"}
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.83
+  },
+  "timing": {
+    "total_tokens": 19876,
+    "duration_ms": 88214,
+    "total_duration_seconds": 88.2
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "移除『show your reasoning first』推理復述指令（識別其在新旗艦上的 refusal/品質風險）",
+        "reason": "斷言把 refusal 與品質兩類風險用隱含 OR 綁在一起：本答案只講品質面（冗長/表演性輸出），從未觸及 refusal 面，仍判 PASS。建議拆成兩條，或改寫為要求指出『對已有獨立推理通道的模型，強制復述推理造成冗餘/衝突』這一真正機制，避免泛泛的『少囉嗦』答案默認過關。"
+      }
+    ],
+    "overall": "斷言組整體有鑑別力——第 6 條（改動要量測）precisely 抓住了『機械交付改寫文本、從不提測試』的執行者，本次正確 FAIL。其餘五條錨定具體 artifact（刪步驟腳手架/刪節拍/解 NEVER-ALWAYS 矛盾/嚴重度 rubric），淺改寫無法僥倖通過。唯一弱點是斷言 1 的 refusal/品質歧義。"
+  },
+  "claims": [
+    {
+      "claim": "把 thorough 重定義為『查證徹底』而非『報告鉅細靡遺』，解決了原 prompt 的 conservative vs thorough 內在矛盾",
+      "type": "quality",
+      "verified": true,
+      "evidence": "改寫版兩軸分離：查證不設限（use tools to confirm before reporting）、報告受 severity rubric 約束，兩者不再衝突。"
+    },
+    {
+      "claim": "新 prompt 增加了原版完全沒有的輸出格式契約（Severity/Location/Issue/Evidence）",
+      "type": "factual",
+      "verified": true,
+      "evidence": "原版無任何輸出格式規定；改寫版 33-39 行新增結構化 per-file 格式。"
+    },
+    {
+      "claim": "改寫版新增『用工具查證可達性/可利用性再報』的 agentic 指引，原版沒有",
+      "type": "factual",
+      "verified": true,
+      "evidence": "原版只有 read the diff；改寫版 16-19 行與理由 #6 明確新增。"
+    }
+  ]
 }
