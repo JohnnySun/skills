@@ -75,7 +75,7 @@ thinking 開關與部署方預設。**推理太淺 → 升檔位；過度思考 
 | 改寫／遷移既有提示（skill、system prompt、review prompt） | [references/rewrite-protocol.md](references/rewrite-protocol.md) |
 | 檢查提示裡的已知毒點（召回率殺手、refusal 誘因……） | [references/anti-patterns.md](references/anti-patterns.md) |
 | 各層級／各供應商的細節差異與旋鈕對照 | [references/tier-matrix.md](references/tier-matrix.md) |
-| 不確定某個具體模型（Cursor 選單裡的某項、Grok/GPT/Gemini…）屬於哪一層 | [references/model-roster.md](references/model-roster.md) |
+| 不確定某個具體模型（你選單裡的某項、Grok/GPT/Gemini/開源…）屬於哪一層 | [references/model-roster.md](references/model-roster.md) |
 
 ## 鐵律
 
