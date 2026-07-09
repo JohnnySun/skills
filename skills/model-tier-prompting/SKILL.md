@@ -62,6 +62,9 @@ thinking 開關與部署方預設。**推理太淺 → 升檔位；過度思考 
 3. **自我驗證探針**：要求「完成後驗證並報告證據」，看它是真跑了驗證、
    還是聲稱完成。虛報 → 按經濟層對待（驗證外置），無論其他表現多好。
 
+已知模型先查 [references/model-roster.md](references/model-roster.md)（具體模型→層級快照）；
+表上沒有、或表看起來過時的，才跑上面的歸層探針並把結論回填該表。
+
 歸層結論記進工程自己的模型檔案（哪一層、哪些旋鈕、已知怪癖），下次直接查。
 
 ## 場景路由
@@ -72,6 +75,7 @@ thinking 開關與部署方預設。**推理太淺 → 升檔位；過度思考 
 | 改寫／遷移既有提示（skill、system prompt、review prompt） | [references/rewrite-protocol.md](references/rewrite-protocol.md) |
 | 檢查提示裡的已知毒點（召回率殺手、refusal 誘因……） | [references/anti-patterns.md](references/anti-patterns.md) |
 | 各層級／各供應商的細節差異與旋鈕對照 | [references/tier-matrix.md](references/tier-matrix.md) |
+| 不確定某個具體模型（Cursor 選單裡的某項、Grok/GPT/Gemini…）屬於哪一層 | [references/model-roster.md](references/model-roster.md) |
 
 ## 鐵律
 
