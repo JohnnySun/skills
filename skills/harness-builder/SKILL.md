@@ -29,7 +29,7 @@ Harness = 圍繞 agent 的四層結構，缺一層都不算閉環：
 2. **每個輸出都要有消費者**：量測沒人看 = 沒裝儀表；inbox 沒人消費 = 沒有回流。設計任何機關時先回答「它的輸出誰在哪個時機消費」。
 3. **Ratchet 只進不退**：債務數只許降、防護清單只許長。放鬆一律走顯式逃生（`FORCE=1 原因`）+ 自動記帳，讓每次後退都變成週報上的可見負債。
 4. **證據長存，SSOT 進 repo**：gate 事件落 JSONL 帳本、債務落 ledger 檔、反思落 inbox——全部進 git。單機工具（本地記憶、~/ 下的檔案）只能當快取。
-5. **Harness 自己吃 TDD**：改機關先寫失敗測試，fixture 用真實誤射樣本不用理想化樣本；每個「不再誤觸發」的修正配一個「該觸發仍觸發」的正向對照。harness 要有自己的一鍵可信集。
+5. **Harness 對可維護行為吃 TDD**：先分類；改 reusable 機關、parser、validator、installer、policy enforcement、stable contract 或可重現 regression 時先寫失敗測試。探索、唯讀查證、純文檔與 throwaway probe 不強求 Red→Green，但仍須獨立驗證。誤射修正用真實樣本 fixture，並配「該觸發仍觸發」的正向對照。harness 要有自己的一鍵可信集。
 6. **當下歸因**：測試變紅、需求偏差、gate 被繞過——都必須在資訊最全的當下三選一處置（修好/改語義+寫明/登記掛帳）。事後考古成本是當下判斷的十倍且經常無解。
 7. **小步 + 成本有界**：一拍只消費一個最小單元（一條 inbox / 一筆債務 / 一個 gate），跑不完留給下一拍。慢即是快，因為 ratchet 保證不會退。
 
@@ -88,7 +88,7 @@ Harness = 圍繞 agent 的四層結構，缺一層都不算閉環：
 ### C. 迭代一個機關（修誤射/漏攔）
 
 固定節拍：選一個單元 → 三行需求對齊（複述/驗收/本次不做）→ 定位落點 →
-TDD（真實樣本 fixture + 正向對照）→ 跑 harness 全量可信集 → review → 收帳
+工作分類 → 行為改動走 TDD（真實樣本 fixture + 正向對照）→ 跑 harness 全量可信集 → review → 收帳
 （inbox 條目改 status、commit message 寫明機關化了什麼）。
 機關實現的落點選擇與陷阱見 [references/mechanism-toolbox.md](references/mechanism-toolbox.md)
 與 [references/pitfalls.md](references/pitfalls.md)（後者全部來自真實事故，動手寫偵測邏輯前必讀）。

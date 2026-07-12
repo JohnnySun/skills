@@ -100,7 +100,7 @@ or one clearly separated review pass.
 | --- | --- | --- |
 | A | Correctness & Plan Alignment | Requirement coverage, behavior, regressions, API contracts |
 | B | Risk & Safety | Security, auth, data loss, concurrency, migrations, rollback |
-| C | Tests & Verification | TDD evidence, real behavior coverage, missing tests, gate upkeep |
+| C | Tests & Verification | Work classification, scoped TDD evidence, real behavior coverage, independent verification, gate upkeep |
 | D | Maintainability | Simplicity, local patterns, coupling, readability, abstractions |
 | E | UX/Product Impact | User-visible changes, i18n, error states, design-system compliance, rollout |
 
@@ -260,11 +260,17 @@ drive another iteration.
 
 ### 5. Patch
 
-Patch open blockers with the smallest code and test changes that satisfy the
-requirements. Preserve TDD: failing test first (Red), minimal implementation
-(Green), then refactor. Produce a changelog mapping ledger keys to commits or
-edits. Increment `materialFixAttempts` only when the change could plausibly
-resolve that item. Re-run the trusted verification set after patching.
+Patch open blockers with the smallest changes that satisfy the requirements.
+Classify each patch first. For maintained repeatable behavior (reusable code,
+parsers, validators, generators, installers, recovery, reproducible regressions,
+hooks/gates/policy enforcement, release artifacts, stable contracts, or dangerous
+write paths), preserve TDD: failing test first (Red), minimal implementation
+(Green), then refactor. Discovery, research, read-only exploration, pure docs,
+diagnostics, throwaway probes, and behavior-preserving structural moves do not
+require TDD, but still require risk-proportionate verification. Produce a changelog
+mapping ledger keys to commits or edits. Increment `materialFixAttempts` only when
+the change could plausibly resolve that item. Re-run the trusted verification set
+after patching.
 
 ### 6. Verification Sweep
 

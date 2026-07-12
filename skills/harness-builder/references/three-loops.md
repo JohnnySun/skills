@@ -57,7 +57,8 @@ git commit     ▶ 目標模組有 pending → DENY
 
 例行程序（日排程或手動）
   1. 可信集若紅 → 先走當下歸因，不在紅底上蓋新測試
-  2. 取 queue 頭部「一個」單元，TDD（Red→Green）
+  2. 取 queue 頭部「一個」單元並先分類；可維護行為改動走 TDD（Red→Green），
+     探索/唯讀/純文檔等免 TDD 單元仍保留獨立驗證
   3. 跑該模組全量可信集
   4. commit（固定 prefix 便於統計吞吐）；償還了 ledger 債務 → 同 commit 縮減清單
   5. 運行記錄落 repo

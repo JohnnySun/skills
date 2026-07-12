@@ -8,7 +8,7 @@
 | 路徑 | 內容 | 閉環站點 |
 |---|---|---|
 | `skills/harness-builder/` | Harness 構建方法論：四層結構、七公理、三環閉環、機關工具箱、真實事故陷阱、反偷懶提示詞 pattern、四平台 hooks 對照 | 設計端 |
-| `skills/harness-operate/` | Harness 日常運轉七步節拍：消費反思 inbox → 需求對齊 → 落點 → TDD（真實樣本+正向對照）→ 全量可信集 → review → 收帳 | 消費端 |
+| `skills/harness-operate/` | Harness 日常運轉七步節拍：消費反思 inbox → 需求對齊 → 落點 → 工作分類 → 可維護行為走 TDD（真實樣本+正向對照）→ 全量可信集 → review → 收帳 | 消費端 |
 | `skills/code-review/` | 對抗式代碼 review 收斂迴路：reviewer lanes 攻擊 diff + 獨立 verifier 反駁 + 硬預算保證終止 | 驗證端 |
 | `skills/plan-review/` | 對抗式方案/設計 review 收斂迴路（與 code-review 同構，作用於實作前） | 驗證端 |
 | `skills/workflow-design/` | Claude Code Workflow 腳本設計方法：任務分解、phase 劃分、控制流 primitive、schema、對抗式驗證與成本隔離檢查 | 設計端 |

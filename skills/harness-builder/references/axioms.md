@@ -72,11 +72,15 @@ ledger、工單、偏差、事件帳本、週報…）一行，列出寫入端 /
 聚合結果必須落 repo（週報產出時把本機計數聚合進 repo 內的 health report），
 **聚合值才是可信數據**。
 
-## 5. Harness 自己吃 TDD
+## 5. Harness 對可維護行為吃 TDD
 
-**陳述**：機關腳本的測試密度應該不低於業務代碼——參考實現的 hook 測試檔
-（1845 行）比 hook 本體（1740 行）還大。改機關 = 先寫失敗測試，再最小實作，
-再跑 harness 自己的一鍵可信集。
+**陳述**：先分類工作。reusable code/parser/validator/generator/installer/recovery、
+可重現 regression fix、hook/gate/policy enforcement、release artifact、stable
+contract 與危險 write path 等可維護行為變更，先寫失敗測試，再最小實作。
+探索、研究、唯讀查證、設計規劃、純文檔、證據整理、compiler diagnostics、
+throwaway probe 與行為不變的結構搬移不強求 TDD；一旦開始改變可維護行為就重新
+分類。驗證獨立於 TDD，兩類工作都要用與風險相稱的證據收環。機關腳本的測試密度
+仍應不低於業務代碼——參考實現的 hook 測試檔（1845 行）比本體（1740 行）還大。
 
 **兩條特有紀律**：
 - **真實樣本 fixture**：修誤射/漏攔時，fixture 必須用真實發生過的命令/路徑
