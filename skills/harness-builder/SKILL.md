@@ -84,6 +84,10 @@ Harness = 圍繞 agent 的四層結構，缺一層都不算閉環：
 3. **帳本三件套**：債務 ledger（紅測試掛帳）、事件帳本（deny/bypass 記錄）、反思 inbox（收集端先上，哪怕暫時人肉消費）。
 4. **環3 輕量版**：週報腳本聚合帳本 → 人讀 → 開工單。先跑起來再自動化。
 5. **環2**：等債務和量測數據累積後再上償還隊列。
+6. **Agent profile 收環（工程採用時）**：export 或 upgrade 可攜 runtime 與 repo
+   profile，將 wiring fragment 合併到實際生效的 prompt-submit hook，再跑
+   `agent-kit.sh profile check --root <repo> --client <client>`。若已有語義等價
+   profile，可驗證後跳過；不覆寫既有 hooks 或規則。
 
 ### C. 迭代一個機關（修誤射/漏攔）
 

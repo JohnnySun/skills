@@ -123,6 +123,9 @@ TDD 類工作遵守：
   升級要在 commit message 寫「測試語義變更：舊 → 新，原因」）。
 - 多平台檢查：新 gate 依賴的事件在所有 agent 平台的佈線裡是否都接了
   （事件名/格式差異見 harness-builder 的 platform-hooks reference）。
+- 工程採用 agent-kit profile 時：export 或 upgrade 後合併實際 client wiring，
+  並跑 `agent-kit.sh profile check --root <repo> --client <client>`；已有語義等價
+  profile 可驗證後跳過，不覆寫既有 hooks。
 
 ### 6. Review + 提交
 

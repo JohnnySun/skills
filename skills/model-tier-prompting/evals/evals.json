@@ -41,6 +41,45 @@
         "提到參數旋鈕（effort/reasoning/verbosity/結構化輸出 API）作為提示之外的調節手段",
         "建議每層配回歸驗證或 eval，量測後再上線"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "要派代理修一個偶發資料損壞的跨服務 bug。Claude Code 和 Codex 各自的官方預設不能覆蓋；其餘可選模型有 GPT-5.6 Sol、Grok 4.5、GLM 5.2。團隊說 Sol 的獨立 coding-agent 成績較高，但 Grok 的 token 單價低很多。請選一個模型並寫出派工策略。",
+      "expected_output": "應把「最低能力門檻」與「候選中最低 token 成本」分成兩步；要求或引用多個獨立且任務相關的證據，不能只用一個綜合 Index 或模型名稱。對高風險資料損壞調查，若品質優勢有足夠證據可選 Sol；若證據未達門檻，應明說不能用成本取代品質。派工厚度需引用 Sol 的 per-model 行為證據或要求先跑歸層探針，不能從 Index=59 直接推導。不得改寫 Claude Code 或 Codex 的官方預設。",
+      "files": [],
+      "assertions": [
+        "明確保留 Claude Code 與 Codex 的官方預設；此 routing policy 只處理其餘手選模型",
+        "把高風險資料損壞任務的能力門檻與成本決勝分開，不因 Grok 單價較低就直接選它",
+        "指出 Sol 與 Grok 的外部 agent 分數來自不同 native harness，要求本地對照而不把跨 harness 分數當保證",
+        "選擇品質較高的候選，或明確說明在品質未坐實前不能以成本取代品質",
+        "若使用主力層派工，必須以 Sol 的 per-model 行為證據或歸層探針支撐該厚度，而非由 Index=59 直接推導；prompt 包含明確範圍、驗收／證據與工具使用時機，沒有經濟層式長步驟腳手架"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "我們有 80 個獨立、格式固定的文件轉換任務。可選 Composer 2.5、GPT-5.6 Luna、GLM 5.2；有人說 Composer 是 Cursor 自研所以肯定最強。請決定調度策略與派工 prompt 厚度，並把成本比較講清楚。",
+      "expected_output": "應拒絕把模型所有者的自家 benchmark 當成能力事實；只在可比的獨立評測或本地 eval 支持時才把模型放進能力接近的候選池。因任務低風險且格式固定，可選達到門檻後 token 成本最低者；prompt 厚度仍取決於選中的模型配置與觀察到的格式可靠性，不能只因任務是批次就強制經濟層腳手架。",
+      "files": [],
+      "assertions": [
+        "拒絕將 Composer 的所有者主張或自家 benchmark 當成它一定最強的證據",
+        "指出 Composer、Luna、GLM 的可比性／harness／評測日期限制，並要求本地 eval 後才宣稱 value leader",
+        "只在能力達到此低風險批次任務門檻後，才按所有者 token 價格選成本較低者",
+        "成本比較包含 input、output 與可用的 cache read／write，而非只比 input 單價",
+        "派工 prompt 厚度跟隨選中配置：已坐實的主力配置可用緊湊 scope／mapping／schema 契約和外置驗證；只有經濟層配置或 pilot 顯示格式漂移時才加步驟、few-shot 與明確停止條件"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "要在 Cursor 裡手選模型跑日常 agentic coding。候選是 GPT-5.3 Codex、GPT-5.6 Terra、Grok 4.5；不要用 Cursor 的 API pool、Max Mode 或 legacy 加價來比較。請制定可重跑的價格導向選擇規則，而不是給一份永久固定模型排行榜。",
+      "expected_output": "應使用各模型所有者公布的 input、output、cached-input／cache-write token 價格，依實際或明示的 token 組合計算有效成本；先以獨立、任務相關的表現決定候選池，再由價格打破能力接近的平手。應指出 effort、agent harness、快取命中率與輸出 token 數會使僅看單價失真。",
+      "files": [],
+      "assertions": [
+        "明確排除 Cursor 的 API pool、Max Mode、legacy surcharge 與自家性能排行",
+        "列出或要求查詢 GPT-5.3 Codex、GPT-5.6 Terra、Grok 4.5 的模型所有者 token 價格來源",
+        "給出含 input、cached input、cache write、output 和按次工具費的有效成本公式或等價計算方式",
+        "先以模型 ID、effort、agent harness、評測日期一致的獨立性能證據決定候選 cohort，再由成本決勝",
+        "拒絕永久固定排行榜，並對缺少可比外部資料的模型要求本地 eval"
+      ]
     }
   ]
 }
