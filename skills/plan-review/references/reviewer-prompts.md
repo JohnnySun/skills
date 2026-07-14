@@ -4,7 +4,7 @@
 
 When constructing each `Task(subagent_type=general-purpose)` prompt, combine:
 1. The **Common Preamble** (below)
-2. The **role-specific section** (A, B, C, D, or E)
+2. The **role-specific section** (ENG, A, B, C, D, E, or F)
 3. The plan document to review
 4. If iteration > 1: the current Issue Ledger with statuses
 5. If iteration > 1: the revision changelog
@@ -47,6 +47,14 @@ Critical/major findings from any reviewer are then passed to the **Verifier**
 > surface. If the surface contains explicit `ASSUMPTION:` lines, treat them as
 > given facts — do not raise findings that merely dispute a stated assumption.
 >
+> Keep review altitude at the design-drawing level. Promote only gaps in
+> invariants, cross-layer contracts, security boundaries, data lifecycle,
+> rollback/rollout, or scope coherence into blocker candidates. Put UI polish,
+> copy, accessibility details, test-case enumeration, and code-style notes in
+> `constructionNotes`; they do not enter the ledger or drive another sweep.
+> If an implementation detail reveals a structural gap, report the structural
+> contract that is missing.
+>
 > If this is iteration > 1, use the Issue Ledger with statuses to verify
 > resolved/open blockers and dedupe findings. Use attributionEvidence, not
 > memory or the changelog alone, to classify late critical/major findings.
@@ -59,6 +67,26 @@ Critical/major findings from any reviewer are then passed to the **Verifier**
 >
 > For dimensions genuinely not applicable to this plan type, score +1 with a
 > note "not applicable" rather than penalizing.
+>
+> Return at most the severity-sorted top 10 findings. Summarize additional
+> non-blocking or overflow observations in `residuals`.
+
+---
+
+## Reviewer ENG: Merged Engineering Lane
+
+You are the default Engineering reviewer for light and ordinary standard
+profiles. Apply Reviewer A's architecture/contracts lens, Reviewer B's
+completeness/risk lens, and Reviewer C's conventions/testability lens in one
+pass. Tag every finding with one `perspective` value:
+
+- `architecture`
+- `completeness-risk`
+- `conventions-testability`
+
+Keep the same evidence bar and review-altitude boundary as the specialist
+lanes. Merging the lenses reduces scheduling cost; it does not permit skipping
+any of the three structural perspectives.
 
 ---
 
@@ -130,7 +158,7 @@ You are a **QA Architect & Risk Analyst** reviewing a plan/design document.
 You are a **Quality & Conventions Engineer** reviewing a plan/design document.
 
 ### PRIMARY Focus (evaluate with HIGH weight)
-- Adherence to project coding standards and conventions (CLAUDE.md rules)
+- Adherence to the target repository's effective governance and coding standards
 - Plan document quality: clarity, structure, completeness of acceptance criteria
 - Testability of proposed changes: did the plan classify the work first, require a failing
   test for maintained repeatable behavior, and keep verification for TDD-exempt discovery,
@@ -139,16 +167,16 @@ You are a **Quality & Conventions Engineer** reviewing a plan/design document.
 - Consistency with existing codebase patterns and utilities
 - Reuse of existing functions, components, and abstractions
 - Whether proposed new abstractions are justified vs reusing existing ones
-- Observability plan presence (metrics/verification per the Prometheus gate)
+- Observability plan presence (metrics, logs, traces, and repository-specific verification gates)
 
 ### CONDITIONAL: Cross-platform Dimensions (activate when plan involves multi-platform changes)
-- Coverage across all relevant platforms (server/desktop/mobile H5/APP)
+- Coverage across all relevant services, clients, and delivery surfaces
 - Platform-specific handling (conditional compilation, responsive design)
 - i18n completeness (all locale files planned; dynamic concatenated keys
   registered in the project's dynamic-key registry; language-source decision
   present for each copy category — viewer UI language vs content original
   language vs receiver language)
-- CSS quality (variables, responsive units, no hardcoded values)
+- Styling quality (tokens or variables, responsive units, no unsupported hardcoded values)
 - Image optimization (project image pipeline usage)
 - Console log language compliance (per the project's log-language policy)
 
@@ -198,17 +226,17 @@ banned; plan proposes one".
    enumerate screens and states at all, that omission is itself a MAJOR
    finding — you cannot verify what is not specified.
 2. **Design-system compliance of anything the plan does specify**: token usage
-   (no one-off colors/radii/shadows), rpx vs px policy, radius tiers, 8-pt
-   spacing, z-index bands, glass recipes vs hardcoded opaque backgrounds,
-   motion tokens.
+   (no one-off colors/radii/shadows), the repository's unit policy, radius and
+   spacing tiers, z-index bands, surface recipes, and motion tokens.
 3. **Platform parity.** Desktop and Mobile changes to the same feature must be
    planned together (same tokens, icons, themes; divergence only in layout).
    A plan covering only one platform for a shared feature is a MAJOR finding
    unless it states why.
 4. **Interaction flow coherence**: user actions and system responses defined;
    no dead ends; the user can complete the journey start to finish.
-5. **Cognitive load and information architecture**: top-level entries ≤ 3,
-   secondary functions in drawer/sheet per DESIGN.md functional layering.
+5. **Cognitive load and information architecture**: apply the repository's
+   navigation limits and functional-layering authority; do not invent generic
+   numeric limits when the target repository has not declared them.
 6. **Accessibility basics**: contrast on glass/scenes (scene protection),
    keyboard nav where applicable.
 7. **Micro-interaction feedback**: what happens on tap, submit, wait.
@@ -283,6 +311,20 @@ discover what the plan *never mentions*. A plan's most expensive defects are
 omissions, and omissions cannot be found by reading the plan harder — they are
 found by rebuilding the coverage baseline independently and diffing.
 
+### Profile budget
+
+- `light` F-lite runs only when explicitly requested. Enumerate at most 25
+  items across entry points/journeys and cross-layer contracts.
+- `standard` enumerates at most 40 items. Prioritize API/data/persistence plans
+  as contracts → lifecycle → journeys → observability → platform parity →
+  content language; prioritize infrastructure/internal workflow plans as
+  lifecycle → observability → contracts → journeys → parity → content
+  language. List skipped dimensions under `unenumeratedDimensions`.
+- `release-gate` uses the full rubric within the hard sweep budget.
+
+All variants preserve isolated Phase 1 inputs, a frozen baseline, and the
+Phase-2 plan diff.
+
 ### Protocol: two phases, strict order
 
 **Phase 1 — Blind enumeration (do NOT read the plan body yet).**
@@ -356,7 +398,9 @@ demonstrably exists in the codebase or requirement.
 
 ## Verifier (finding skeptic)
 
-Spawn one verifier per iteration, after reviewers return. Give it: the plan
+Spawn one verifier per iteration, after reviewers return. Batch all
+critical/major candidates from that iteration into this one skeptic job. Give
+it: the plan
 artifact, the context summary, codebase access when Reviewer F coverage
 findings are present (checking an enumeration source's existence requires
 reading the code, not just the plan), and the list of critical/major findings

@@ -1,0 +1,44 @@
+{
+  "skill_name": "plan-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "A bounded plan has one installer acceptance item: a new skill must be discoverable in cursor, cursor-cli, claude, codex, and codex-native, and rerunning the existing installer after an interrupted new-skill write must fill the missing entry. A reviewer recommends fixing this by adding persistent per-client install state, a cross-client transaction, managed deletion and migration, process locks, and an fsync/power-loss protocol. Revise the plan and decide whether the finding remains a blocker.",
+      "expected_output": "The review workflow must emit a scopeDelta showing new persisted state, lifecycle ownership, and installer transaction responsibilities. Because the frozen acceptance only asks for discoverability and idempotent rerun of the existing installer, it must not absorb the proposed redesign. It should defer the installer transaction to a new work item/surface and revise the P0 only with stateless expected-entry validation and rerun tests if needed.",
+      "files": [],
+      "assertions": [
+        "Outputs an explicit scopeDelta covering persisted state, lifecycle owners, public API or side-effect changes introduced by the recommendation",
+        "Does not add persistent install state, cross-client transaction, managed migration/deletion, or power-loss fsync protocol to the bounded plan",
+        "Classifies the redesign as needs-decision, deferred work, or a new bounded surface rather than an open blocker repaired in-place",
+        "Preserves the original acceptance with a narrower check such as stateless expected-entry validation and idempotent rerun testing",
+        "Explains which original acceptance boundary does and does not authorize the revision"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Select the plan-review profile for two bounded artifacts using only the deterministic selection table. Artifact A changes one dialog's copy layout in one client and changes no persistent schema, cross-layer producer-consumer contract, security or money surface, second module, or irreversible migration/rollout. Artifact B adds a server-persisted field consumed by two clients, changes authorization checks, and spans a service plus both clients. The caller did not request a release gate. Show which rows match and select a profile for each artifact.",
+      "expected_output": "Artifact A matches none of the five standard triggers and selects light. Artifact B matches persistent storage, cross-layer contract, security, and multi-module blast-radius triggers and selects standard. Neither selects release-gate because that profile requires an explicit request.",
+      "files": [],
+      "assertions": [
+        "Evaluates all five standard triggers explicitly rather than choosing by artifact size or intuition",
+        "Selects light for Artifact A because every trigger is false",
+        "Selects standard for Artifact B and names triggers 1, 2, 3, and 4",
+        "Does not infer release-gate without an explicit caller request",
+        "Keeps the hard budget and mandatory verifier attached to the selected profile"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "A design-drawing review produces these findings: (1) destructive actions have no ownership or authorization invariant; (2) a persisted status has no rollback or lifecycle owner; (3) the confirmation button label could be shorter; (4) the loading state should use a different animation; (5) the implementation plan should enumerate two more unit-test cases. Classify what may enter the Issue Ledger and what must be carried as construction notes, then state what can drive another sweep.",
+      "expected_output": "Findings 1 and 2 are structural candidates because they concern security invariants and persisted-data lifecycle/rollback; after independent verification, confirmed critical or major versions may enter the ledger and drive revision. Findings 3, 4, and 5 are construction-level details and must be placed in constructionNotes, not the ledger, so they cannot drive another sweep.",
+      "files": [],
+      "assertions": [
+        "Classifies missing authorization ownership and persisted-state lifecycle or rollback as structural findings",
+        "Still requires independent verifier confirmation before structural candidates can block",
+        "Classifies copy, animation detail, and test-case enumeration as constructionNotes",
+        "States that constructionNotes do not enter the ledger or drive another sweep",
+        "Preserves the distinction between an implementation detail and the load-bearing contract it may reveal"
+      ]
+    }
+  ]
+}

@@ -19,18 +19,28 @@ the naive "review N rounds" pattern cannot:
 
 Three harness outcomes:
 
-- `passed`: no verified blockers remain and a held-out sweep found no new
-  evidence-backed blocker.
+- `passed`: no verified blockers remain and the profile's final check found no
+  new evidence-backed blocker (`light`/`standard`: the focused verification
+  sweep or its allowed director self-check; `release-gate`: one held-out
+  sweep).
 - `continue`: verified, fixable blockers remain; revise and run one more sweep.
 - `blocked`: plateaued, oscillating, needs a human decision, lacks required
   evidence, review process is defective, or the iteration budget is exhausted.
 
 ## Iteration Budget (hard backstop)
 
-Default budget: **5 sweeps total** (discovery + verification sweeps + held-out
-sweeps combined). The harness may set a different budget explicitly, but the
-skill must never exceed the active budget silently, and must never treat "no
-budget given" as "unlimited".
+The selected profile fixes the active budget; do not choose it by intuition:
+
+| Profile | Active sweep budget | Held-out sweep |
+| --- | ---: | --- |
+| `light` | **2** (discovery + focused verification) | None |
+| `standard` | **3** total | None |
+| `release-gate` | Caller-declared, up to **5** total | At most one |
+
+The hard ceiling is **5** for every profile. The skill must never exceed the
+active budget silently and must never treat "no budget given" as "unlimited".
+The budget is deliberately tight because this loop is a token furnace when run
+naively; see Cost Control below.
 
 Why a hard cap when convergence semantics exist: convergence rules are executed
 by a model, and a misread rule or a churny artifact can defeat them. The budget
@@ -53,6 +63,90 @@ Two secondary brakes, checked every iteration:
 - **Per-issue cap**: an issue still open after 2 material revision attempts with
   no new fixable evidence is a plateau, not a todo.
 
+## Review Altitude
+
+Treat the reviewed artifact as a **design drawing or harness frame**, not as a
+construction checklist. Review only the load-bearing structure: invariants,
+cross-layer producer-to-consumer contracts, security surfaces, data lifecycle,
+rollback and rollout, and whether the declared scope is internally coherent.
+
+Downgrade construction-level findings such as UI interaction details, copy,
+accessibility polish, test-case enumeration, and code style into the
+`constructionNotes` appendix. They do not enter the Issue Ledger, drive a
+revision, or consume another sweep. Carry them with the later implementation
+work order, where surface-specific review, code review, and acceptance gates
+can evaluate them at the right altitude.
+
+If a construction concern exposes a missing load-bearing contract, record the
+contract gap rather than litigating the implementation detail. For example,
+"the plan has no ownership rule for destructive actions" is structural;
+"the confirmation button label is unclear" is a construction note.
+
+## Cost Control (run the loop lean)
+
+Adversarial review cost grows as reviewers × sweeps × artifact size. The
+guarantees come from verification and attribution — not from re-running every
+lane every round. Defaults:
+
+- **Profile `light`**: one merged Engineering lane → one mandatory batched
+  verifier → revise → one focused verification check → stop (**2 scheduled
+  model jobs** by default). Do not activate D or E merely because the artifact
+  touches a user-facing surface. There is no held-out sweep.
+- **Profile `standard` (when any selection trigger matches)**: one merged
+  Engineering lane + isolated F enumeration → one mandatory batched verifier
+  → revise → one **focused verification sweep** → stop when clean (**3–4
+  scheduled model jobs**). Split A/B/C only for an unusually large artifact
+  whose blast radius spans multiple subsystems. Activate D or E only when UI
+  design or product scope is the artifact's core subject. There is no held-out
+  sweep.
+- **Profile `release-gate` (only when the caller explicitly requests it)**:
+  adds at most ONE held-out sweep after convergence. Reserve for
+  launch-blocking architecture or irreversible migrations.
+- **Final targeted sweep**: when every latest revision is a pure textual
+  clarification with no semantic or contract change, the director may perform
+  the focused check directly and record `finalSweep: "director-self"`. It
+  consumes the logical sweep but schedules no additional model job. Otherwise
+  schedule exactly one skeptic job and record `finalSweep: "mini-job"`.
+- **Focused verification sweep**: from iteration 2 onward, never re-run the
+  full panel fresh. Default to one skeptic job that verifies every open item
+  against the revised artifact, plus F's cheap re-diff when F is active. Re-run
+  a specialist lane separately only when its open item requires that context.
+  Full-panel fresh eyes are the held-out sweep's job, and only the
+  release-gate profile buys one.
+- **Model tiering**: reviewers run on the cheapest capable workhorse tier;
+  only the verifier merits a stronger tier and verifies each iteration's
+  blocker candidates in one batch. Point reviewers at rubric files to read
+  themselves instead of pasting full rubrics into every prompt.
+- **Finding caps**: every reviewer lane returns at most its severity-sorted top
+  10 findings. Summarize overflow under `residuals`; it does not disappear and
+  does not trigger another sweep.
+- **Residuals are a report, not a next round.** When the loop stops
+  (converged, budget spent, or plateau), every remaining non-blocking item
+  ships in the final report as a residuals list for the owner.
+  Minor/suggestion items and REFUTED findings never justify another sweep —
+  there is no state in which "one more sweep to be safe" is a valid reason to
+  spend one.
+
+### Profile Selection (deterministic)
+
+Honor an explicit `release-gate` request first. Otherwise evaluate every row
+before scheduling reviewers. Select `standard` if any of the five triggers is
+true; select `light` only when all five are false. Never infer a release gate.
+
+| # | Artifact feature | Result when true |
+| ---: | --- | --- |
+| 1 | Adds or changes a persistent database, schema, or storage contract | `standard` |
+| 2 | Changes a cross-layer producer-to-consumer contract | `standard` |
+| 3 | Touches a security surface, including prompt injection, authorization, permissions, or money flows | `standard` |
+| 4 | Changes more than one module or independently owned subsystem | `standard` |
+| 5 | Designs an irreversible migration or rollout | `standard` |
+| - | All five rows are false | `light` |
+| - | Caller explicitly requests a release gate | `release-gate` |
+
+Examples: a one-surface copy-layout adjustment with no contract or persistence
+change is `light`; a persisted field consumed across a service/client boundary
+is `standard` even when the code diff is expected to be small.
+
 ## Inputs
 
 1. Plan artifact: inline text or file path.
@@ -66,6 +160,7 @@ Two secondary brakes, checked every iteration:
 
 | ID | Role | Focus |
 | --- | --- | --- |
+| ENG | Engineering | Merged A+B+C: architecture/contracts, completeness/risk, conventions/testability |
 | A | Architecture & Feasibility | Architecture, feasibility, API/data contracts, integration, performance |
 | B | Completeness & Risk | Requirements, edge cases, security, failures, migration, rollback |
 | C | Quality & Conventions | Project conventions, testability, clarity, reuse, maintainability |
@@ -73,12 +168,14 @@ Two secondary brakes, checked every iteration:
 | E | Product & Business Value | MVP scope, priority, business value, success metrics, rollout |
 | F | Blind-Spot Reconstruction | Independent coverage enumeration from requirement + codebase, diffed against the plan |
 
-A, B, C are always active. Activate D when the plan changes UI, user journeys,
-user-visible states, or frontend data shapes. Activate E when the plan changes
-product behavior, user-facing APIs, workflow scope, pricing, release strategy,
-or measurable business outcomes. Activate F when the plan adds or changes
-user-facing behavior or crosses layers (client↔server) — skip it only for pure
-refactors and doc-only plans.
+Use ENG instead of separate A/B/C for `light` reviews and ordinary `standard`
+reviews. Split A/B/C only when specialist isolation is justified by an
+unusually large, multi-subsystem artifact; `release-gate` may use the split
+panel. Activate D or E only when UI design or product scope is the artifact's
+core subject. F is part of every `standard` and `release-gate` discovery sweep;
+its blind reconstruction is what distinguishes those profiles from `light`.
+The default `light` shape remains exactly ENG plus verifier. If the caller
+explicitly adds F-lite, record the extra job and retain the light cap below.
 
 **Reviewer F is structurally different: it hunts omissions, not defects.**
 Every other reviewer reads the plan and attacks what it says; a plan's most
@@ -115,6 +212,18 @@ F's loop mechanics differ from other lanes, by design:
   surfacing later must not trip the `review_process_defect` brake — that
   brake exists to catch defective sweeps, and F re-diffing a frozen baseline
   is the loop working as designed.
+
+Profile-specific enumeration caps do not weaken the isolation protocol:
+
+- `light` F-lite, when explicitly added, enumerates at most **25** items and
+  covers only entry points/journeys and cross-layer contracts.
+- `standard` F enumerates at most **40** items. Prioritize dimensions by the
+  artifact type and list anything skipped as `unenumeratedDimensions`.
+- `release-gate` retains the full F rubric within the hard sweep budget.
+
+Every active F variant preserves mechanical Phase-1 isolation, a frozen
+coverage baseline, the Phase-2 diff, and the exemption from
+`latentMissedStreak`.
 
 **Reviewer D is not generic.** When D is active, its prompt must require
 reading the repo's design-system authority (tokens doc + UI review checklist +
@@ -176,6 +285,11 @@ The loop is adversarial in both directions:
 Why both sides: attack-only review generates churn — plausible-sounding
 blockers that restart the loop forever. Verification-only review goes soft.
 Attack plus refutation is what makes "no blockers remain" mean something.
+
+Across every profile preserve the hard budget ceiling, a mandatory independent
+verifier, F's isolation protocol whenever F is active, bidirectional
+adversarial review, and the convergence semantics. Profiles reduce cost; they
+do not weaken those invariants.
 
 Reviewers know their findings will face refutation. This is stated in their
 prompt so they front-load evidence instead of padding the finding list.
@@ -281,7 +395,7 @@ Never feed previous review prose into later reviewers.
   "severity": "critical|major|minor|suggestion",
   "status": "open|resolved|wontfix|needs_decision|missing_evidence|refuted|stale",
   "verification": "confirmed|refuted|needs_decision|not_required",
-  "reviewer": "A|B|C|D|E|F",
+  "reviewer": "ENG|A|B|C|D|E|F",
   "firstSeenIteration": 1,
   "lastSeenIteration": 1,
   "materialRevisionAttempts": 0,
@@ -299,20 +413,61 @@ drive another iteration, and are reported at the end.
 
 ### 6. Revise
 
-The main agent revises the plan. Produce a changelog mapping every addressed
-blocker to a concrete change (format in `references/scoring-rubric.md`). Do not
-broaden scope while revising unless the ledger requires it. Increment
+Before editing, the main agent must emit a `scopeDelta` against the frozen
+surface:
+
+```json
+{
+  "scopeDelta": {
+    "persistedState": [],
+    "externalSideEffects": [],
+    "permissions": [],
+    "publicAPIs": [],
+    "lifecycleOwners": [],
+    "targetPlatforms": []
+  }
+}
+```
+
+Each array lists responsibilities added or removed by the proposed revision.
+An empty delta means the change only completes an already-frozen schema,
+negative case, or error semantic. A non-empty added responsibility is not
+automatically justified by a reviewer's recommendation. The agent must point
+to the exact original acceptance item that already owns it. If it cannot, mark
+the finding `needs_decision` or create deferred work; do not revise the current
+artifact to absorb the new subsystem.
+
+This is especially important when a narrow acceptance such as "the skill is
+discoverable in every client and reinstall is idempotent" attracts a proposed
+persistent installer transaction, migration database, fsync protocol, or new
+cross-client owner. Those may be worthwhile designs, but they are a new review
+surface rather than a repair to the current one.
+
+After this boundary check, the main agent revises the plan. Produce a changelog
+mapping every addressed blocker to a concrete change (format in
+`references/scoring-rubric.md`) and include the `scopeDelta` disposition. Do
+not broaden scope while revising unless the frozen acceptance boundary already
+requires it or the owner explicitly approves a new surface. Increment
 `materialRevisionAttempts` only when the change could plausibly resolve that
 item.
 
-### 7. Verification Sweep
+### 7. Verification Sweep (focused)
 
-Next iteration is another fresh full sweep — not a delta pass. Reviewers
-receive: revised artifact, current Issue Ledger (statuses only), revision
-changelog, attributionEvidence, context summary, role rubric. Each reviewer
-does two things: verify that addressed blockers were actually handled, and
-fresh-sweep the whole artifact for regressions. New critical/major findings go
-through the verifier (step 4) before entering the ledger.
+Next iteration is a **focused sweep**, not a full-panel re-run (see Cost
+Control). Schedule one skeptic by default to verify all open ledger items and
+check the changed semantics for revision-introduced regressions; include F's
+re-diff against its frozen baseline when F is active. Give the skeptic the
+revised artifact, Issue Ledger statuses, revision changelog,
+attributionEvidence, context summary, and relevant rubric. Re-run a specialist
+lane only when an item cannot be assessed without that lane's context. New
+critical/major findings still go through the verifier before entering the
+ledger. Full-panel fresh coverage is reserved for a requested release gate.
+
+Inspect the latest revision diff before scheduling the final targeted check.
+When every change is a pure textual clarification and none changes semantics
+or a contract, let the director perform the check and record
+`finalSweep: "director-self"`. Otherwise schedule exactly one mini skeptic job
+and record `finalSweep: "mini-job"`.
 
 ### 8. Attribute Late Findings
 
@@ -351,9 +506,13 @@ remain:
 Ask once per loop at most. If decisions remain unanswered, that is `blocked`,
 not a re-ask.
 
-### 10. Held-Out Sweep
+### 10. Held-Out Sweep (release-gate profile only)
 
-When no open blockers remain, run a held-out sweep before `passed`: a fresh
+Under `light` and `standard` there is no held-out sweep: when no open blockers
+remain after the focused verification sweep, the loop is converged — `passed`,
+with residuals reported.
+
+Under `release-gate`, run at most ONE held-out sweep before `passed`: a fresh
 reviewer set receives only the final plan, context summary, and acceptance
 criteria — no ledger, no changelog. When F was active, the held-out set
 includes a fresh F running the full two-phase protocol (Phase 1: one-line
@@ -363,10 +522,10 @@ Held-out critical/major findings still go through the verifier.
 
 - No confirmed blockers → converged, `passed`. Minor/suggestion findings are
   recorded as non-blocking notes; they do not reopen the loop.
-- A confirmed blocker → add to ledger, continue (budget permitting).
-- Maximum 2 held-out sweeps per review. If the second held-out sweep still
-  finds a confirmed blocker, return `blocked` with the ledger — a plan that
-  keeps failing fresh eyes needs a human, not a third sweep.
+- A confirmed blocker → revise once, send the fix through the verifier for
+  that item only, then stop: `passed` if the ledger is clean, otherwise
+  `blocked` with the ledger. There is never a second held-out sweep — a plan
+  that keeps failing fresh eyes needs a human, not another sweep.
 
 ### 11. Stop Conditions
 
@@ -384,7 +543,8 @@ Return `blocked` when any of these holds:
 - `latentMissedStreak >= 2` (`review_process_defect`).
 - Revisions repeatedly introduce new critical/major blockers in the same
   section (artifact instability).
-- Second held-out sweep found a confirmed blocker.
+- The held-out sweep's confirmed blocker survived the post-revision
+  re-verification (release-gate profile).
 
 When blocked, include unresolved ledger items, attempted changes, and the
 specific decision or evidence needed to resume.
@@ -393,14 +553,16 @@ specific decision or evidence needed to resume.
 
 | Condition | harnessStatus | Next action |
 | --- | --- | --- |
-| Confirmed open critical/major blockers, fixable, budget remains | `continue` | Revise, fresh full sweep |
+| Confirmed open critical/major blockers, fixable, budget remains | `continue` | Revise, focused verification sweep |
 | Finding refuted by verifier | no change | Downgrade to suggestion, record refutation |
 | `needs_decision` items, interactive | `continue` | Decision checkpoint (one batched ask) |
 | `needs_decision` items, headless or already asked | `blocked` | Stop with decision list |
 | `latentMissedStreak >= 2` | `blocked` | Stop with `review_process_defect` |
-| No open blockers, held-out not yet run | `continue` | Held-out sweep |
+| No open blockers, `light` profile | `passed` | Stop after focused verification; report residuals |
+| No open blockers, `standard` profile | `passed` | Stop after focused verification; report residuals |
+| No open blockers, `release-gate` profile, held-out not yet run | `continue` | Held-out sweep (max 1) |
 | No confirmed blockers after held-out | `passed` | Stop |
-| Budget exhausted / plateau / oscillation / instability / 2nd held-out blocker | `blocked` | Stop with unresolved ledger |
+| Budget exhausted / plateau / oscillation / instability / unresolved held-out blocker | `blocked` | Stop with unresolved ledger |
 
 Review scores are reviewer opinions. The verified Issue Ledger is the
 convergence state.
@@ -411,16 +573,26 @@ Every iteration ends with one JSON block:
 
 ```json
 {
-  "schemaVersion": "harness.review-loop.v2",
+  "schemaVersion": "harness.review-loop.v3",
   "reviewType": "plan",
   "iteration": 3,
-  "budget": {"maxSweeps": 5, "sweepsUsed": 3},
+  "budget": {"maxSweeps": 3, "sweepsUsed": 2, "profile": "standard"},
+  "finalSweep": "director-self|mini-job|held-out|not-run",
+  "cost": {
+    "jobs": 4,
+    "wallClockMinutes": 18,
+    "byStage": {
+      "discovery": {"jobs": 2, "wallClockMinutes": 9},
+      "verification": {"jobs": 1, "wallClockMinutes": 6},
+      "finalSweep": {"jobs": 1, "wallClockMinutes": 3}
+    }
+  },
   "harnessStatus": "continue|passed|blocked",
   "reason": "short reason for the status",
   "reasonCode": "open_blockers|held_out_required|converged|plateau|oscillation|artifact_instability|missing_evidence|needs_decision|review_process_defect|reviewer_failure|budget_exhausted",
-  "activeReviewers": ["A", "B", "C", "D", "F"],
+  "activeReviewers": ["ENG", "F"],
   "surfaceId": "stable hash or short name for the bounded review surface",
-  "scores": {"A": 1, "B": 2, "C": 1, "D": -1, "F": 1},
+  "scores": {"ENG": 1, "F": 1},
   "convergence": {
     "openBlockers": 1,
     "confirmedFindings": 3,
@@ -452,15 +624,22 @@ Every iteration ends with one JSON block:
     "latestRevisionDiff": "<path-or-hash-or-artifact-id>"
   },
   "ledger": [],
+  "constructionNotes": [],
+  "residuals": [],
   "nextAction": {
-    "type": "revise|fresh_full_sweep|held_out_sweep|ask_user|stop",
+    "type": "revise|focused_verification|director_self_check|held_out_sweep|ask_user|stop",
     "summary": "what the harness should do next"
   }
 }
 ```
 
 The harness stores this JSON as the Cell result and uses it to schedule (or
-not schedule) the next iteration.
+not schedule) the next iteration. `cost` is required on every iteration:
+`jobs` counts scheduled model jobs, `wallClockMinutes` records elapsed wall
+clock time, and `byStage` accounts for both by lifecycle stage. A
+`director-self` final sweep records zero jobs for that stage while still
+consuming the logical focused-verification sweep. `constructionNotes` and
+`residuals` are required arrays; either may be empty.
 
 ## Failure Handling
 
@@ -486,4 +665,5 @@ not schedule) the next iteration.
 When improving this skill with Skill Creator, build eval seeds covering:
 termination under churn, adversarial refutation of weak findings, checkpoint
 batching, missed-blocker discovery, anti-anchoring, held-out convergence, and
-plateau exit.
+plateau exit. Include deterministic profile-selection and review-altitude
+downgrade seeds whenever those contracts change.

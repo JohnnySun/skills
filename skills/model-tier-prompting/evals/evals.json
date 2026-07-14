@@ -41,6 +41,21 @@
         "提到參數旋鈕（effort/reasoning/verbosity/結構化輸出 API）作為提示之外的調節手段",
         "建議每層配回歸驗證或 eval，量測後再上線"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "The repository authorizes sub-agent dispatch. Route three jobs using the active owner overlay: a bounded everyday implementation, a difficult critical implementation, and a token-heavy repeatable batch. Also state the acceptance boundary when a GPT-family worker reports that all tests pass, and explain how the runtime model ID changes the agent's role at session start.",
+      "expected_output": "Route everyday bounded implementation to gpt-5.6-sol at medium, difficult critical implementation to Sol at xhigh-max, and token-heavy batch work to gpt-5.6-terra at max-xhigh or Sonnet when appropriate. Do not route to Haiku or gpt-5.6-luna. Require an independent director to personally run the trusted suite before accepting GPT work, because self-reported green is not evidence. Identify director, primary executor, or construction-layer role from the full runtime model ID and keep routing advisory separate from repository authorization.",
+      "files": [],
+      "assertions": [
+        "Routes bounded everyday construction to gpt-5.6-sol at medium",
+        "Routes difficult or critical construction to gpt-5.6-sol at xhigh-max",
+        "Routes token-heavy batch work to gpt-5.6-terra at max-xhigh or Claude Sonnet",
+        "Does not dispatch Haiku or gpt-5.6-luna",
+        "Requires independent director execution of the trusted verification suite instead of accepting GPT self-report",
+        "Maps the full runtime model ID to director, primary executor, or construction-layer role",
+        "Keeps owner routing advisory separate from repository delegation authorization"
+      ]
     }
   ]
 }

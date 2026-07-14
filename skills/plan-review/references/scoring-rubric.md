@@ -66,7 +66,7 @@ Each reviewer MUST output their review as a JSON block within markdown code fenc
 
 ```json
 {
-  "reviewer": "A|B|C|D|E|F",
+  "reviewer": "ENG|A|B|C|D|E|F",
   "iteration": 1,
   "score": 2,
   "summary": "One-paragraph overall assessment of the plan",
@@ -74,6 +74,7 @@ Each reviewer MUST output their review as a JSON block within markdown code fenc
     {
       "severity": "critical|major|minor|suggestion",
       "category": "architecture|completeness|security|conventions|ux|product|...",
+      "perspective": "architecture|completeness-risk|conventions-testability (required for ENG)",
       "finding": "Clear description of the issue or observation",
       "recommendation": "Specific suggested fix or improvement",
       "planSection": "Which part of the bounded review surface this relates to",
@@ -81,6 +82,9 @@ Each reviewer MUST output their review as a JSON block within markdown code fenc
       "attributionEvidence": "When iteration > 1, cite originalSurfaceSnapshot/currentSurfaceSnapshot/latestRevisionDiff evidence used for novelIssueSource",
       "novelIssueSource": "none|revision_introduced|latent_missed|scope_expansion|unsupported"
     }
+  ],
+  "residuals": [
+    "Finding summaries beyond the top-10 cap or other non-blocking owner notes"
   ],
   "strengths": [
     "List of things the plan does well"
@@ -93,11 +97,13 @@ Each reviewer MUST output their review as a JSON block within markdown code fenc
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| `reviewer` | Yes | Must match assigned role (A/B/C/D/E/F) |
+| `reviewer` | Yes | Must match assigned role (ENG/A/B/C/D/E/F) |
 | `iteration` | Yes | Current review loop iteration number. This is not capped by this skill; the outer harness owns runtime budget. |
 | `score` | Yes | Must be one of: 2, 1, -1, -2 |
 | `summary` | Yes | 1-3 sentences |
 | `findings` | Yes | Array, can be empty for +2. Critical/major findings require `evidence`, `novelIssueSource`, and attribution evidence when iteration > 1. |
+| `findings[].perspective` | ENG only | Must be `architecture`, `completeness-risk`, or `conventions-testability`; other lanes may omit it. |
+| `residuals` | Yes | Array, can be empty. Holds overflow beyond the severity-sorted top 10 and other non-blocking owner notes; never drives another sweep. |
 | `strengths` | Yes | Array, at least 1 item |
 | `verdict` | Yes | APPROVE (+2/+1), REVISE (-1), REJECT (-2) |
 
